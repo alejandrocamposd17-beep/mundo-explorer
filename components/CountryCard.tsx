@@ -14,6 +14,8 @@ type Props = {
   capital?: string;
   area: number;
   badges?: BadgeKey[];
+  /** Imagen visible al cargar (LCP): se descarga de inmediato en vez de en diferido. */
+  priority?: boolean;
 };
 
 const BADGE_STYLES: Record<BadgeKey, string> = {
@@ -23,7 +25,7 @@ const BADGE_STYLES: Record<BadgeKey, string> = {
   territory: "bg-slate-900/80 text-white",
 };
 
-export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, area, badges = [] }: Props) {
+export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, area, badges = [], priority = false }: Props) {
   const { locale, t } = useI18n();
   const fmt = new Intl.NumberFormat(intlLocale(locale));
   return (
@@ -36,7 +38,8 @@ export default function CountryCard({ cca3, name, flag, flagAlt, region, capital
         <img
           src={flag}
           alt={flagAlt || name}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           width={320}
           height={213}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"

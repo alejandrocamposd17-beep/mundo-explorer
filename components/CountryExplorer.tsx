@@ -152,7 +152,7 @@ export default function CountryExplorer({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.slice(0, visible).map((c) => (
+          {filtered.slice(0, visible).map((c, i) => (
             <CountryCard
               key={c.cca3}
               cca3={c.cca3}
@@ -162,6 +162,7 @@ export default function CountryExplorer({
               capital={c.capital}
               area={c.area}
               badges={c.badges}
+              priority={i < 4}
             />
           ))}
         </div>
