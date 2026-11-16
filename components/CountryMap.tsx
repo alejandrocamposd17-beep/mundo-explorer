@@ -38,18 +38,18 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
         const L = ("default" in mod ? (mod as unknown as { default: typeof mod }).default : mod) ?? mod;
         if (cancelled || !containerRef.current) return;
         map = L.map(containerRef.current, { scrollWheelZoom: false }).setView(center, zoom);
-        // Estilo de CARTO según el tema: oscuro (dark_all) o claro (light_all)
-        const tileUrl = (theme: string | undefined) =>
-          `https://{s}.basemaps.cartocdn.com/${theme === "light" ? "light_all" : "dark_all"}/{z}/{x}/{y}{r}.png`;
-        const tiles = L.tileLayer(tileUrl(document.documentElement.dataset.theme), {
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
-          subdomains: "abcd",
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }).addTo(map);
 
-        // Cambia el estilo del mapa cuando el usuario alterna el tema
-        themeObserver = new MutationObserver(() => tiles.setUrl(tileUrl(document.documentElement.dataset.theme)));
+        // Modo oscuro del mapa: se invierten los colores de los mosaicos con un filtro CSS
+        // (sin servicios de pago ni claves). Se actualiza cuando el usuario cambia el tema.
+        const container = containerRef.current;
+        const applyTheme = () =>
+          container.classList.toggle("map-dark", document.documentElement.dataset.theme !== "light");
+        applyTheme();
+        themeObserver = new MutationObserver(applyTheme);
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
         for (const p of points) {
