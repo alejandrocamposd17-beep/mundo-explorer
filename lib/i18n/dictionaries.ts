@@ -256,7 +256,7 @@ const es = {
       "Mundo Explorer es una aplicación web construida con la metodología Vibe Coding: el desarrollo se apoyó en Claude (Anthropic) como copiloto para generar estructura, componentes y estilos, mientras que la arquitectura, la validación del código y las decisiones técnicas fueron dirigidas y revisadas manualmente.",
     stack: "Tecnologías",
     author: "Autor",
-    authorText: "Alejandro Campos — Estudiante de Kodigo Academy, El Salvador.",
+    authorText: "Alejandro Campos",
     items: [
       { name: "Next.js 16 (App Router)", desc: "Rutas, Server Components, Route Handlers y streaming." },
       { name: "TypeScript", desc: "Tipado estricto en todo el proyecto." },
@@ -546,7 +546,7 @@ const en: Dictionary = {
       "Mundo Explorer is a web app built with the Vibe Coding methodology: development relied on Claude (Anthropic) as a copilot to generate structure, components and styles, while the architecture, code review and technical decisions were directed and checked by hand.",
     stack: "Tech stack",
     author: "Author",
-    authorText: "Alejandro Campos — Kodigo Academy student, El Salvador.",
+    authorText: "Alejandro Campos",
     items: [
       { name: "Next.js 16 (App Router)", desc: "Routes, Server Components, Route Handlers and streaming." },
       { name: "TypeScript", desc: "Strict typing across the whole project." },
