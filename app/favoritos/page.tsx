@@ -79,7 +79,7 @@ export default function FavoritesPage() {
           {favorites.map((f) => (
             <li key={f.cca3} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={f.flag} alt="" className="h-12 w-18 rounded object-cover" />
+              <img src={f.flag} alt="" width={72} height={48} className="h-12 w-18 rounded object-cover" />
               <div className="min-w-0 flex-1">
                 <Link href={`/paises/${f.cca3.toLowerCase()}`} className="block truncate font-semibold hover:underline">
                   {f.name}
