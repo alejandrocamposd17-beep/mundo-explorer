@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: Lint, tests y build
+    name: Lint, tests, build y e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,18 @@ jobs:
         run: npm run lint
       - name: Tipos
         run: npm run typecheck
-      - name: Tests
+      - name: Tests unitarios
         run: npm test
       - name: Build
         run: npm run build
+      - name: Instalar navegador de Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Tests de extremo a extremo
+        run: npm run test:e2e
+      - name: Guardar reporte si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
