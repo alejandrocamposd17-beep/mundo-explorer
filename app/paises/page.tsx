@@ -10,18 +10,17 @@ export default async function CountriesPage() {
   // Solo enviamos al cliente los campos necesarios (payload más liviano)
   const data: ExplorerCountry[] = countries.map((c) => ({
     cca3: c.cca3,
-    name: c.name.common,
-    flag: c.flags.png,
-    flagAlt: c.flags.alt,
+    name: c.name,
+    flag: c.flagPng,
     region: c.region,
-    capital: c.capital?.[0],
-    population: c.population,
+    capital: c.capital,
+    area: c.area,
   }));
 
   return (
     <div>
       <h1 className="text-3xl font-bold">Países del mundo</h1>
-      <p className="mt-2 mb-6 text-slate-400">Busca, filtra por región y ordena por población.</p>
+      <p className="mt-2 mb-6 text-slate-400">Busca, filtra por región y ordena por área.</p>
       <CountryExplorer countries={data} />
     </div>
   );
