@@ -112,6 +112,21 @@ Cada iteración corresponde a uno o más commits del historial.
 | 37 | Playwright | 11 escenarios en escritorio y Pixel 7 que se ejecutan en CI contra el build de producción. |
 | 38 | Analytics | `@vercel/analytics` en el layout y activado en el plan gratuito. |
 
+### Quinta ronda: pulido final
+
+> Prompt: "¿Hay algo más que podamos agregar o arreglar?" → "Haz todas".
+
+| # | Iteración | Qué se pidió / ajustó |
+|---|-----------|-----------------------|
+| 39 | Accesibilidad 97 → 100 | Lighthouse marcó contraste insuficiente: en modo claro el azul de marca se oscurece (`--color-brand-400`) y el enlace de mapas pasó a botón con fondo sólido. |
+| 40 | Rendimiento | `width`/`height` explícitos en imágenes, carga prioritaria (`fetchPriority="high"`) de las primeras banderas visibles (LCP) y banderas decorativas del hero como fondo CSS (la animación las rotaba y Lighthouse lo detectaba como proporción incorrecta). |
+| 41 | SEO | `app/sitemap.ts` (259 URLs) y `app/robots.ts`. |
+| 42 | Supabase sin pausas | Route Handler `/api/keepalive` + Vercel Cron diario en `vercel.json`. |
+| 43 | Reproducibilidad | Workflow manual que genera `package-lock.json` desde GitHub Actions (el entorno de desarrollo no tenía acceso a npm) y CI con `npm ci`. |
+| 44 | Mantenimiento | Dependabot semanal; su primer PR (TypeScript 7) falló en CI, lo que demuestra que las actualizaciones se validan antes de fusionarse. |
+| 45 | Wikipedia | Si el nombre es ambiguo (ej. Georgia) se reintenta con "(país)" / "(country)". |
+| 46 | i18n | Manifest de la PWA, imágenes Open Graph y textos de carga también se traducen. |
+
 ## 4. Decisiones técnicas
 
 - **Server Components para datos de países:** se obtienen y cachean en el servidor (ISR de 24 h), lo que mejora el SEO y reduce JavaScript en el cliente.

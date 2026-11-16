@@ -15,8 +15,12 @@ Aplicación web **bilingüe (español/inglés)** construida con **Next.js 16 (Ap
 | ![Inicio](docs/screenshots/inicio.jpg) | ![Detalle](docs/screenshots/detalle.jpg) |
 | **Pronóstico de 7 días** | **Mapa mundial (modo oscuro)** |
 | ![Pronóstico](docs/screenshots/clima-y-mapa.jpg) | ![Mapa](docs/screenshots/mapa.jpg) |
-| **Comparador** | **Modo claro** |
+| **Comparador (distancia y diferencia horaria)** | **Modo claro** |
 | ![Comparar](docs/screenshots/comparar.jpg) | ![Modo claro](docs/screenshots/paises-modo-claro.jpg) |
+| **Juego: Adivina la bandera** | **Rankings** |
+| ![Juego de banderas](docs/screenshots/juego-banderas.jpg) | ![Rankings](docs/screenshots/rankings.jpg) |
+| **Versión en inglés** | |
+| ![Detalle en inglés](docs/screenshots/detalle-ingles.jpg) | |
 
 **Vista previa al compartir el enlace (Open Graph):**
 
@@ -24,13 +28,15 @@ Aplicación web **bilingüe (español/inglés)** construida con **Next.js 16 (Ap
 
 ## ⚡ Rendimiento (Lighthouse / PageSpeed Insights)
 
-| Rendimiento | Accesibilidad | Buenas prácticas | SEO |
-|:---:|:---:|:---:|:---:|
-| **100** | **96** | **100** | **100** |
+Medido en producción el 16 nov 2026, después de agregar las 15 funciones nuevas:
 
-Medido en producción con PageSpeed Insights (móvil y escritorio, 15 nov 2026), antes del rediseño visual.
+| Página | Dispositivo | Rendimiento | Accesibilidad | Buenas prácticas | SEO |
+|---|---|:---:|:---:|:---:|:---:|
+| Inicio `/` | Móvil | **98** | **100** | **100** | **100** |
+| Detalle `/paises/slv` | Escritorio | **100** | **100** | **100** | **100** |
+| Detalle `/paises/slv` | Móvil | **91** | **100** | **100** | **100** |
 
-![Lighthouse](docs/screenshots/lighthouse.jpg)
+El detalle en móvil es la página más pesada (mapa, gráfica, Wikipedia y clima en vivo).
 
 ## ✨ Funcionalidades
 
@@ -104,7 +110,9 @@ npm run dev                  # http://localhost:3000
 
 - **Pruebas unitarias (Vitest):** validación de coordenadas, búsqueda/filtros/orden, normalización y traducción de datos, y saneamiento de favoritos.
 - **Pruebas de extremo a extremo (Playwright):** 11 escenarios en escritorio y móvil (búsqueda, detalle, favoritos, comparador, idioma, juego, Ctrl+K, rankings, API y 404).
-- **CI con GitHub Actions:** en cada push a `main` se ejecutan lint, chequeo de tipos, tests unitarios, build y e2e.
+- **CI con GitHub Actions:** en cada push a `main` se ejecutan lint, chequeo de tipos, tests unitarios, build y e2e (con `npm ci` y `package-lock.json` para instalaciones reproducibles).
+- **Dependabot:** revisa cada semana las dependencias de npm y las GitHub Actions y abre PRs; el CI las valida antes de fusionarlas.
+- **SEO:** `sitemap.xml` con las 259 páginas (incluidas las 250 fichas de países) y `robots.txt`.
 - **Despliegue continuo:** Vercel publica automáticamente cada commit en `main`.
 
 ## 🔐 Variables de entorno
@@ -126,7 +134,9 @@ Las APIs de datos no requieren clave. Supabase es opcional: sin sus variables, l
 
 1. Crea un proyecto en Supabase y ejecuta `supabase/schema.sql` en el SQL Editor.
 2. En *Authentication → URL Configuration* pon tu dominio como Site URL y agrega `https://tu-dominio/cuenta` a Redirect URLs.
-3. Agrega `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en `.env.local` y en Vercel.
+3. Agrega `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en `.env.local` y en Vercel (tipo *Config*: la clave publishable es pública por diseño).
+4. **Para que el proyecto gratuito no se pause:** `vercel.json` programa un Cron diario hacia `/api/keepalive`, que hace una consulta mínima a Supabase. Opcional: define `CRON_SECRET` en Vercel para que solo el Cron pueda llamarla.
+5. **Correos de acceso (opcional, recomendado):** el servicio de correo incluido en Supabase tiene un límite bajo por hora. Para uso real, crea una cuenta en [Resend](https://resend.com), verifica un dominio y en Supabase → *Authentication → Emails → SMTP Settings* usa host `smtp.resend.com`, puerto `465`, usuario `resend` y tu API key de Resend como contraseña.
 
 ## 🛡️ Seguridad
 
