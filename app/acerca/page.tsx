@@ -7,7 +7,9 @@ const STACK = [
   { name: "TypeScript", desc: "Tipado estricto en todo el proyecto." },
   { name: "Tailwind CSS v4", desc: "Diseño responsive mobile-first." },
   { name: "mledoze/countries", desc: "Dataset JSON público con datos de 250 países." },
-  { name: "Open-Meteo", desc: "API pública de clima, consumida desde /api/clima." },
+  { name: "Open-Meteo", desc: "Clima, pronóstico de 7 días y geocodificación de capitales." },
+  { name: "Leaflet + OpenStreetMap", desc: "Mapas interactivos sin claves de API." },
+  { name: "Vitest + GitHub Actions", desc: "Pruebas unitarias y CI en cada push." },
   { name: "Vercel", desc: "Despliegue continuo desde GitHub." },
 ];
 
@@ -18,7 +20,7 @@ export default function AboutPage() {
         <h1 className="text-3xl font-bold">Acerca del proyecto</h1>
         <p className="mt-3 text-slate-300">
           Mundo Explorer es una aplicación web construida con la metodología <strong>Vibe Coding</strong>: el
-          desarrollo se apoyó en un asistente de IA como copiloto para generar estructura, componentes y estilos,
+          desarrollo se apoyó en Claude (Anthropic) como copiloto para generar estructura, componentes y estilos,
           mientras que la arquitectura, la validación del código y las decisiones técnicas fueron dirigidas y
           revisadas manualmente.
         </p>
