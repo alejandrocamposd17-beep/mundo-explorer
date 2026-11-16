@@ -33,10 +33,13 @@
   --color-slate-500: #64748b;
   --color-slate-800: #e2e8f0;
   --color-slate-900: #ffffff;
+  /* Azul de marca más oscuro para que los enlaces cumplan contraste AA sobre fondo claro */
+  --color-brand-400: #0a5bbd;
 }
 
 /* Secciones que siempre se muestran oscuras (hero, clima), sin importar el tema */
 .force-dark {
+  --color-brand-400: #4aa8ff;
   --color-white: #ffffff;
   --color-slate-100: #f1f5f9;
   --color-slate-200: #e2e8f0;

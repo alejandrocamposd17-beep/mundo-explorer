@@ -47,6 +47,8 @@ export default async function HomePage() {
             src={`https://flagcdn.com/w160/${f.code}.png`}
             alt=""
             aria-hidden
+            width={160}
+            height={107}
             className={`animate-float pointer-events-none absolute -z-10 rounded-md opacity-40 shadow-lg ${f.className}`}
             style={{ animationDelay: f.delay }}
           />
