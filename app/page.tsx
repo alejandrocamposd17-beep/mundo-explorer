@@ -3,6 +3,8 @@ import CountUp from "@/components/CountUp";
 import CountryCard from "@/components/CountryCard";
 import Reveal from "@/components/Reveal";
 import { getAllCountries } from "@/lib/countries";
+import { fmt } from "@/lib/i18n/config";
+import { getI18n } from "@/lib/i18n/server";
 
 const FEATURED = ["SLV", "MEX", "JPN", "ESP", "BRA", "CAN"];
 const HERO_FLAGS = [
@@ -15,7 +17,8 @@ const HERO_FLAGS = [
 ];
 
 export default async function HomePage() {
-  const countries = await getAllCountries();
+  const { locale, t } = await getI18n();
+  const countries = await getAllCountries(locale);
   const featured = countries.filter((c) => FEATURED.includes(c.cca3));
   const totalArea = Math.round(countries.reduce((acc, c) => acc + c.area, 0));
   const regions = new Set(countries.map((c) => c.region)).size;
@@ -49,34 +52,34 @@ export default async function HomePage() {
           />
         ))}
 
-        <p className="text-sm uppercase tracking-[0.25em] text-brand-100">Explora · Compara · Descubre</p>
-        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold sm:text-6xl">El mundo en la palma de tu mano</h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-brand-50/90">
-          Datos de {countries.length} países y territorios, el clima de sus capitales, mapas interactivos y un comparador
-          para descubrir el planeta.
-        </p>
+        <p className="text-sm uppercase tracking-[0.25em] text-brand-100">{t.home.eyebrow}</p>
+        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold sm:text-6xl">{t.home.title}</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-brand-50/90">{fmt(t.home.subtitle, { n: countries.length })}</p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Link
             href="/paises"
             className="rounded-xl bg-white px-5 py-3 font-semibold text-brand-700 shadow-md transition hover:-translate-y-0.5 hover:bg-brand-50"
           >
-            Explorar países
+            {t.home.explore}
           </Link>
           <Link
             href="/aleatorio"
             prefetch={false}
             className="rounded-xl border border-white/40 bg-white/10 px-5 py-3 font-semibold backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/20"
           >
-            🎲 Sorpréndeme
+            🎲 {t.home.surprise}
           </Link>
         </div>
+        <p className="mt-6 hidden text-xs text-brand-100/80 sm:block">
+          {fmt(t.home.shortcut, { key: "Ctrl + K" })}
+        </p>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: "Países y territorios", value: countries.length },
-          { label: "Km² de superficie", value: totalArea },
-          { label: "Regiones", value: regions },
+          { label: t.home.statCountries, value: countries.length },
+          { label: t.home.statArea, value: totalArea },
+          { label: t.home.statRegions, value: regions },
         ].map((s, i) => (
           <Reveal key={s.label} delay={i * 100}>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
@@ -91,9 +94,9 @@ export default async function HomePage() {
 
       <section>
         <div className="mb-4 flex items-end justify-between">
-          <h2 className="text-2xl font-bold">Destinos destacados</h2>
+          <h2 className="text-2xl font-bold">{t.home.featured}</h2>
           <Link href="/paises" className="text-sm text-brand-400 hover:underline">
-            Ver todos →
+            {t.home.seeAll}
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -114,12 +117,8 @@ export default async function HomePage() {
       </section>
 
       <Reveal>
-        <section className="grid gap-4 md:grid-cols-3">
-          {[
-            { href: "/mapa", icon: "🗺️", title: "Mapa mundial", text: "Ubica los 250 países y entra a su detalle con un clic." },
-            { href: "/comparar?a=slv&b=gtm", icon: "⚖️", title: "Comparador", text: "Pon dos países lado a lado: área, idiomas, monedas y más." },
-            { href: "/favoritos", icon: "⭐", title: "Favoritos", text: "Guarda tus destinos y encuéntralos rápido en cualquier momento." },
-          ].map((f) => (
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {t.home.features.map((f) => (
             <Link
               key={f.href}
               href={f.href}
