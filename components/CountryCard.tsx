@@ -8,24 +8,44 @@ type Props = {
   region: string;
   capital?: string;
   area: number;
+  badges?: string[];
 };
 
 const fmt = new Intl.NumberFormat("es-SV");
 
-export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, area }: Props) {
+const BADGE_STYLES: Record<string, string> = {
+  "Sin litoral": "bg-amber-400/90 text-slate-900",
+  "Sin fronteras terrestres": "bg-sky-400/90 text-slate-900",
+  ONU: "bg-blue-600/90 text-white",
+  Territorio: "bg-slate-900/80 text-white",
+};
+
+export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, area, badges = [] }: Props) {
   return (
     <Link
       href={`/paises/${cca3.toLowerCase()}`}
-      className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:-translate-y-1 hover:border-brand-400/60 hover:bg-white/10"
+      className="group block h-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:-translate-y-1 hover:border-brand-400/60 hover:bg-white/10 hover:shadow-xl hover:shadow-brand-700/10"
     >
-      <div className="aspect-[3/2] overflow-hidden bg-slate-800">
+      <div className="relative aspect-[3/2] overflow-hidden bg-slate-800">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={flag}
           alt={flagAlt || `Bandera de ${name}`}
           loading="lazy"
-          className="h-full w-full object-cover transition group-hover:scale-105"
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
+        {badges.length > 0 && (
+          <ul className="force-dark absolute bottom-2 left-2 flex flex-wrap gap-1">
+            {badges.map((b) => (
+              <li
+                key={b}
+                className={`rounded-full px-2 py-0.5 text-[11px] font-semibold shadow ${BADGE_STYLES[b] ?? "bg-slate-900/80 text-white"}`}
+              >
+                {b}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <div className="p-4">
         <h3 className="truncate font-semibold">{name}</h3>

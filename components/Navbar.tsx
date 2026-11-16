@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
@@ -24,8 +25,8 @@ export default function Navbar({ appName }: { appName: string }) {
     <header className="sticky top-0 z-40 border-b border-white/10 nav-bg backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold" onClick={() => setOpen(false)}>
-          <span aria-hidden>🌎</span>
-          <span>{appName}</span>
+          <Logo className="h-8 w-8 transition-transform duration-500 hover:rotate-12" />
+          <span className="font-display tracking-tight">{appName}</span>
         </Link>
 
         <div className="flex items-center gap-2 md:hidden">

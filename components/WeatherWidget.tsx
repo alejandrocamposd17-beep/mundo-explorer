@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ForecastChart from "./ForecastChart";
 import { describeWeather, type WeatherResponse } from "@/lib/weather";
 
 type State =
@@ -90,6 +91,7 @@ export default function WeatherWidget({ lat, lon, place }: { lat: number; lon: n
           {state.data.daily.length > 0 && (
             <>
               <h3 className="mt-6 text-sm uppercase tracking-wider text-sky-200">Pronóstico de 7 días</h3>
+              <ForecastChart days={state.data.daily} />
               <ul className="mt-3 grid grid-cols-2 gap-2 min-[420px]:grid-cols-4 sm:grid-cols-7">
                 {state.data.daily.map((d) => {
                   const w = describeWeather(d.weatherCode);

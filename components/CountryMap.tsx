@@ -29,6 +29,7 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
 
   useEffect(() => {
     let map: import("leaflet").Map | null = null;
+    let themeObserver: MutationObserver | null = null;
     let cancelled = false;
 
     import("leaflet")
@@ -37,16 +38,25 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
         const L = ("default" in mod ? (mod as unknown as { default: typeof mod }).default : mod) ?? mod;
         if (cancelled || !containerRef.current) return;
         map = L.map(containerRef.current, { scrollWheelZoom: false }).setView(center, zoom);
-        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 18,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        // Estilo de CARTO según el tema: oscuro (dark_all) o claro (light_all)
+        const tileUrl = (theme: string | undefined) =>
+          `https://{s}.basemaps.cartocdn.com/${theme === "light" ? "light_all" : "dark_all"}/{z}/{x}/{y}{r}.png`;
+        const tiles = L.tileLayer(tileUrl(document.documentElement.dataset.theme), {
+          maxZoom: 19,
+          subdomains: "abcd",
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }).addTo(map);
+
+        // Cambia el estilo del mapa cuando el usuario alterna el tema
+        themeObserver = new MutationObserver(() => tiles.setUrl(tileUrl(document.documentElement.dataset.theme)));
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
         for (const p of points) {
           const marker = L.circleMarker([p.lat, p.lng], {
             radius: points.length > 1 ? 5 : 9,
-            color: "#0b6fe0",
-            fillColor: "#4aa8ff",
+            color: "#ffffff",
+            fillColor: "#1f8bff",
             fillOpacity: 0.85,
             weight: 2,
           }).addTo(map);
@@ -64,6 +74,7 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
 
     return () => {
       cancelled = true;
+      themeObserver?.disconnect();
       map?.remove();
     };
   }, [points, center, zoom, router]);
@@ -75,7 +86,7 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
   return (
     <div
       ref={containerRef}
-      className={`${height} z-0 w-full overflow-hidden rounded-2xl border border-white/10`}
+      className={`${height} z-0 w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl shadow-black/20`}
       role="region"
       aria-label="Mapa interactivo"
     />

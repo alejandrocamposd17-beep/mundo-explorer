@@ -12,6 +12,7 @@ export type ExplorerCountry = {
   region: string;
   capital?: string;
   area: number;
+  badges: string[];
 };
 
 const PAGE_SIZE = 24;
