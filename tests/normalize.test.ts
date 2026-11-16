@@ -75,15 +75,32 @@ describe("datos adicionales", () => {
   });
 
   it("calcula las insignias del país", () => {
-    expect(computeBadges({ landlocked: true, borders: ["X"], unMember: true })).toEqual(["Sin litoral", "ONU"]);
+    expect(computeBadges({ landlocked: true, borders: ["X"], unMember: true })).toEqual(["landlocked", "un"]);
     expect(computeBadges({ landlocked: false, borders: [], unMember: false, independent: false })).toEqual([
-      "Sin fronteras terrestres",
-      "Territorio",
+      "noLandBorders",
+      "territory",
     ]);
   });
 
   it("solo acepta dominios de internet con formato válido", () => {
     expect(normalizeCountry({ ...raw, tld: [".sv"] }).tld).toBe(".sv");
     expect(normalizeCountry({ ...raw, tld: ["<b>x</b>"] }).tld).toBeUndefined();
+  });
+});
+
+describe("idioma inglés", () => {
+  const c = normalizeCountry(raw, "en");
+
+  it("usa nombres y regiones en inglés", () => {
+    expect(c.name).toBe("El Salvador");
+    expect(c.officialName).toBe("Republic of El Salvador");
+    expect(c.region).toBe("Americas");
+    expect(c.subregion).toBe("Central America");
+  });
+
+  it("traduce idiomas y monedas al inglés", () => {
+    expect(c.languages).toEqual(["Spanish"]);
+    expect(c.currencies[0]).toBe("US Dollar ($)");
+    expect(c.languageCodes).toEqual(["spa"]);
   });
 });

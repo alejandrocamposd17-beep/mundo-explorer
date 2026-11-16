@@ -43,3 +43,23 @@ describe("filterCountries", () => {
     expect(countries).toEqual(copy);
   });
 });
+
+describe("filtros avanzados", () => {
+  const list = [
+    { name: "Bolivia", region: "América", area: 1098581, languageCodes: ["spa", "aym", "que"], landlocked: true, unMember: true },
+    { name: "Chile", region: "América", area: 756102, languageCodes: ["spa"], landlocked: false, unMember: true },
+    { name: "Kosovo", region: "Europa", area: 10908, languageCodes: ["sqi", "srp"], landlocked: true, unMember: false },
+  ];
+
+  it("filtra por idioma", () => {
+    expect(filterCountries(list, { language: "spa" }).map((c) => c.name)).toEqual(["Bolivia", "Chile"]);
+  });
+
+  it("filtra países sin litoral", () => {
+    expect(filterCountries(list, { landlockedOnly: true }).map((c) => c.name)).toEqual(["Bolivia", "Kosovo"]);
+  });
+
+  it("filtra miembros de la ONU", () => {
+    expect(filterCountries(list, { unOnly: true, landlockedOnly: true }).map((c) => c.name)).toEqual(["Bolivia"]);
+  });
+});
