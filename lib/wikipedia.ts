@@ -23,6 +23,13 @@ const WIKI_HOST = /^https:\/\/upload\.wikimedia\.org\//;
  */
 export async function getWikiSummary(title: string, locale: Locale): Promise<WikiSummary | null> {
   if (!title || title.length > 120) return null;
+  // Si el nombre es ambiguo (ej. "Georgia"), se intenta con el sufijo "(país)" / "(country)"
+  const direct = await fetchSummary(title, locale);
+  if (direct) return direct;
+  return fetchSummary(`${title} (${locale === "en" ? "country" : "país"})`, locale);
+}
+
+async function fetchSummary(title: string, locale: Locale): Promise<WikiSummary | null> {
   const lang = locale === "en" ? "en" : "es";
   const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`;
   try {
