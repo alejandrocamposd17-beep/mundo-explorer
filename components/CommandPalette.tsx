@@ -130,7 +130,7 @@ export default function CommandPalette() {
               className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 ${i === active ? "bg-brand-600 text-[#fff]" : ""}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={r.flag} alt="" className="h-5 w-8 rounded-sm object-cover" />
+              <img src={r.flag} alt="" width={32} height={20} className="h-5 w-8 rounded-sm object-cover" />
               <span className="flex-1 truncate font-medium">{r.name}</span>
               <span className={`truncate text-sm ${i === active ? "text-brand-100" : "text-slate-400"}`}>{r.capital}</span>
             </li>

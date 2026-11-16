@@ -138,11 +138,13 @@ export default function QuizGame({ mode, items }: { mode: Mode; items: QuizItem[
               <img
                 src={question.item.flag}
                 alt="?"
+                width={320}
+                height={213}
                 className="mx-auto my-6 h-40 w-auto max-w-full rounded-lg border border-white/10 object-contain shadow-xl"
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={question.item.flag} alt="" className="my-4 h-12 w-auto rounded shadow" />
+              <img src={question.item.flag} alt="" width={72} height={48} className="my-4 h-12 w-auto rounded shadow" />
             )}
             <div className="grid gap-3 sm:grid-cols-2">
               {question.options.map((o) => (

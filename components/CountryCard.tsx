@@ -37,6 +37,8 @@ export default function CountryCard({ cca3, name, flag, flagAlt, region, capital
           src={flag}
           alt={flagAlt || name}
           loading="lazy"
+          width={320}
+          height={213}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
         {badges.length > 0 && (
