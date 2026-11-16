@@ -15,6 +15,7 @@ export default async function CountriesPage() {
     region: c.region,
     capital: c.capital,
     area: c.area,
+    badges: c.badges,
   }));
 
   return (
