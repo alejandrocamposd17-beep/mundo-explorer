@@ -1,8 +1,30 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { parseLat, parseLon } from "@/lib/validation";
-import type { DailyForecast, WeatherResponse } from "@/lib/weather";
+import type { AirQuality, DailyForecast, WeatherResponse } from "@/lib/weather";
 
 const WEATHER_API_URL = process.env.WEATHER_API_URL ?? "https://api.open-meteo.com/v1/forecast";
+const AIR_API_URL = process.env.AIR_QUALITY_API_URL ?? "https://air-quality-api.open-meteo.com/v1/air-quality";
+
+type AirResponse = { current?: { us_aqi?: number; pm2_5?: number; pm10?: number } };
+
+/** Calidad del aire actual; si el servicio falla devolvemos null sin romper el clima. */
+async function fetchAir(lat: number, lon: number): Promise<AirQuality | null> {
+  const url = new URL(AIR_API_URL);
+  url.searchParams.set("latitude", String(lat));
+  url.searchParams.set("longitude", String(lon));
+  url.searchParams.set("current", "us_aqi,pm2_5,pm10");
+  try {
+    const res = await fetch(url, { next: { revalidate: 1800 }, signal: AbortSignal.timeout(6000) });
+    if (!res.ok) return null;
+    const json = (await res.json()) as AirResponse;
+    const aqi = json.current?.us_aqi;
+    if (typeof aqi !== "number" || !Number.isFinite(aqi)) return null;
+    const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+    return { usAqi: Math.round(aqi), pm25: num(json.current?.pm2_5), pm10: num(json.current?.pm10) };
+  } catch {
+    return null;
+  }
+}
 
 type OpenMeteoResponse = {
   current?: {
@@ -19,13 +41,14 @@ type OpenMeteoResponse = {
     temperature_2m_max: number[];
     temperature_2m_min: number[];
     precipitation_probability_max?: (number | null)[];
+    wind_speed_10m_max?: (number | null)[];
   };
 };
 
 /**
  * GET /api/clima?lat=13.7&lon=-89.2
  * Route Handler que actúa como proxy hacia Open-Meteo: valida la entrada,
- * normaliza la respuesta (clima actual + pronóstico de 7 días) y la cachea 10 minutos.
+ * normaliza la respuesta (clima actual, pronóstico de 7 días y calidad del aire) y la cachea 10 minutos.
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -43,15 +66,18 @@ export async function GET(request: NextRequest) {
   url.searchParams.set("latitude", String(lat));
   url.searchParams.set("longitude", String(lon));
   url.searchParams.set("current", "temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day");
-  url.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max");
+  url.searchParams.set(
+    "daily",
+    "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max",
+  );
   url.searchParams.set("forecast_days", "7");
   url.searchParams.set("timezone", "auto");
 
   try {
-    const res = await fetch(url, {
-      next: { revalidate: 600 },
-      signal: AbortSignal.timeout(8000),
-    });
+    const [res, air] = await Promise.all([
+      fetch(url, { next: { revalidate: 600 }, signal: AbortSignal.timeout(8000) }),
+      fetchAir(lat, lon),
+    ]);
     if (!res.ok) {
       return NextResponse.json({ error: "El servicio de clima no está disponible." }, { status: 502 });
     }
@@ -66,6 +92,7 @@ export async function GET(request: NextRequest) {
       max: json.daily!.temperature_2m_max[i],
       min: json.daily!.temperature_2m_min[i],
       precipitationProbability: json.daily!.precipitation_probability_max?.[i] ?? null,
+      windMax: json.daily!.wind_speed_10m_max?.[i] ?? null,
     }));
 
     const data: WeatherResponse = {
@@ -78,6 +105,7 @@ export async function GET(request: NextRequest) {
         time: json.current.time,
       },
       daily,
+      air,
     };
 
     return NextResponse.json(data, {
