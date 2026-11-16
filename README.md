@@ -5,7 +5,7 @@
 Aplicación web **bilingüe (español/inglés)** construida con **Next.js 16 (App Router)**, **TypeScript** y **Tailwind CSS v4** para explorar los países del mundo: **clima, pronóstico, calidad del aire y alertas** de su capital, **hora local**, resumen de **Wikipedia**, **mapa interactivo**, **comparador** con distancia y diferencia horaria, **rankings**, **juegos** de banderas y capitales, y **favoritos sincronizados en la nube** con Supabase. Es **instalable (PWA)** y funciona sin conexión. Desarrollada con la metodología **Vibe Coding** (IA como copiloto de desarrollo).
 
 - **Demo en producción:** https://mundo-explorer.vercel.app
-- **Autor:** Alejandro Campos — Kodigo Academy (FSJ35)
+- **Autor:** Alejandro Campos
 - **Proceso de Vibe Coding:** ver [`VIBE_CODING.md`](./VIBE_CODING.md)
 
 ## 📸 Capturas
