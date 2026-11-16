@@ -7,12 +7,12 @@ type Props = {
   flagAlt?: string;
   region: string;
   capital?: string;
-  population: number;
+  area: number;
 };
 
 const fmt = new Intl.NumberFormat("es-SV");
 
-export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, population }: Props) {
+export default function CountryCard({ cca3, name, flag, flagAlt, region, capital, area }: Props) {
   return (
     <Link
       href={`/paises/${cca3.toLowerCase()}`}
@@ -39,8 +39,8 @@ export default function CountryCard({ cca3, name, flag, flagAlt, region, capital
             <dd className="truncate text-slate-200">{capital || "—"}</dd>
           </div>
           <div className="flex justify-between gap-2">
-            <dt>Población</dt>
-            <dd className="text-slate-200">{fmt.format(population)}</dd>
+            <dt>Área</dt>
+            <dd className="text-slate-200">{fmt.format(area)} km²</dd>
           </div>
         </dl>
       </div>

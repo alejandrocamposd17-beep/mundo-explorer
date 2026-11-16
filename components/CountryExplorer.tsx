@@ -10,10 +10,10 @@ export type ExplorerCountry = {
   flagAlt?: string;
   region: string;
   capital?: string;
-  population: number;
+  area: number;
 };
 
-type SortKey = "name" | "population-desc" | "population-asc";
+type SortKey = "name" | "area-desc" | "area-asc";
 
 const PAGE_SIZE = 24;
 
@@ -56,8 +56,8 @@ export default function CountryExplorer({ countries }: { countries: ExplorerCoun
       return matchesRegion && matchesQuery;
     });
     return [...list].sort((a, b) => {
-      if (sort === "population-desc") return b.population - a.population;
-      if (sort === "population-asc") return a.population - b.population;
+      if (sort === "area-desc") return b.area - a.area;
+      if (sort === "area-asc") return a.area - b.area;
       return a.name.localeCompare(b.name, "es");
     });
   }, [countries, debouncedQuery, region, sort]);
@@ -98,8 +98,8 @@ export default function CountryExplorer({ countries }: { countries: ExplorerCoun
             className="rounded-lg border border-white/15 bg-slate-900 px-3 py-2 outline-none focus:border-brand-400"
           >
             <option value="name">Nombre (A–Z)</option>
-            <option value="population-desc">Población (mayor a menor)</option>
-            <option value="population-asc">Población (menor a mayor)</option>
+            <option value="area-desc">Área (mayor a menor)</option>
+            <option value="area-asc">Área (menor a mayor)</option>
           </select>
         </label>
       </div>

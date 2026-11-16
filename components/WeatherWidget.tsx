@@ -34,7 +34,7 @@ export default function WeatherWidget({ lat, lon, place }: { lat: number; lon: n
 
   return (
     <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-sky-900/60 to-indigo-900/60 p-6">
-      <h2 className="text-sm uppercase tracking-wider text-sky-200">Clima actual en {place}</h2>
+      <h2 className="text-sm uppercase tracking-wider text-sky-200">Clima actual · {place}</h2>
 
       {state.status === "loading" && (
         <div className="mt-4 animate-pulse space-y-3" aria-busy="true">
