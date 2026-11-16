@@ -75,9 +75,11 @@ export default async function CountryDetailPage({ params }: Props) {
         src={country.flagPng}
         alt=""
         aria-hidden
+        width={320}
+        height={213}
         className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[420px] w-[120%] max-w-none -translate-x-1/2 scale-110 object-cover opacity-25 blur-3xl"
       />
-      <Link href="/paises" className="text-sm text-brand-400 hover:underline">
+      <Link href="/paises" className="inline-block rounded-lg bg-slate-900/80 px-2 py-1 text-sm text-brand-400 hover:underline">
         {t.detail.back}
       </Link>
 
@@ -85,7 +87,7 @@ export default async function CountryDetailPage({ params }: Props) {
         <div className="space-y-4 self-start">
           <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/30">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={country.flagSvg} alt={country.name} className="block h-auto w-full" />
+            <img src={country.flagSvg} alt={country.name} width={640} height={427} className="block h-auto w-full" />
           </div>
           {capitalLocation?.timezone && (
             <LocalClock timeZone={capitalLocation.timezone} place={country.capital ?? country.name} />
@@ -134,7 +136,7 @@ export default async function CountryDetailPage({ params }: Props) {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-sm text-brand-400 hover:underline"
+              className="inline-block rounded-lg border border-white/15 bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-100 hover:bg-white/10"
             >
               {t.detail.maps}
             </a>

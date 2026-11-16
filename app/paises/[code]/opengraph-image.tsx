@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { getCountryByCode, numberFmt } from "@/lib/countries";
+import { getCountryByCode, numberFormatter } from "@/lib/countries";
+import { getI18n } from "@/lib/i18n/server";
 
 export const alt = "Ficha del país en Mundo Explorer";
 export const size = { width: 1200, height: 630 };
@@ -8,8 +9,9 @@ export const contentType = "image/png";
 /** Tarjeta para redes sociales: bandera, nombre y datos clave del país. */
 export default async function Image({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const country = await getCountryByCode(code);
-  const name = country?.name ?? "País no encontrado";
+  const { locale, t } = await getI18n();
+  const country = await getCountryByCode(code, locale);
+  const name = country?.name ?? t.detail.notFound;
 
   return new ImageResponse(
     (
@@ -40,9 +42,9 @@ export default async function Image({ params }: { params: Promise<{ code: string
           <div style={{ display: "flex", fontSize: 72, fontWeight: 800, lineHeight: 1.05, marginTop: 12 }}>{name}</div>
           {country && (
             <div style={{ display: "flex", flexDirection: "column", marginTop: 28, fontSize: 30, color: "#cbd5e1", gap: 10 }}>
-              <div style={{ display: "flex" }}>Capital: {country.capital ?? "—"}</div>
-              <div style={{ display: "flex" }}>Región: {country.subregion ?? country.region}</div>
-              <div style={{ display: "flex" }}>Área: {numberFmt.format(country.area)} km²</div>
+              <div style={{ display: "flex" }}>{t.detail.capital}: {country.capital ?? "—"}</div>
+              <div style={{ display: "flex" }}>{t.detail.region}: {country.subregion ?? country.region}</div>
+              <div style={{ display: "flex" }}>{t.detail.area}: {numberFormatter(locale).format(country.area)} km²</div>
             </div>
           )}
         </div>
