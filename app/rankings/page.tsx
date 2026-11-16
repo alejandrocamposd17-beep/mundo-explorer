@@ -67,7 +67,7 @@ export default async function RankingsPage() {
                     >
                       <span className="w-7 text-center font-display font-bold text-slate-400">{MEDALS[i] ?? i + 1}</span>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={c.flagPng} alt="" loading="lazy" className="h-5 w-8 rounded-sm object-cover" />
+                      <img src={c.flagPng} alt="" loading="lazy" width={32} height={20} className="h-5 w-8 rounded-sm object-cover" />
                       <span className="flex-1 truncate font-medium">{c.name}</span>
                       <span className="text-sm tabular-nums text-slate-400">{list.value(c)}</span>
                     </Link>
