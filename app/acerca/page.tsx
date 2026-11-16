@@ -6,7 +6,7 @@ const STACK = [
   { name: "Next.js 16 (App Router)", desc: "Rutas, Server Components, Route Handlers y streaming." },
   { name: "TypeScript", desc: "Tipado estricto en todo el proyecto." },
   { name: "Tailwind CSS v4", desc: "Diseño responsive mobile-first." },
-  { name: "REST Countries", desc: "API pública con datos de países." },
+  { name: "mledoze/countries", desc: "Dataset JSON público con datos de 250 países." },
   { name: "Open-Meteo", desc: "API pública de clima, consumida desde /api/clima." },
   { name: "Vercel", desc: "Despliegue continuo desde GitHub." },
 ];
