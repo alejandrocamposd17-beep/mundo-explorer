@@ -49,7 +49,7 @@ export default async function HomePage() {
             aria-hidden
             width={160}
             height={107}
-            className={`animate-float pointer-events-none absolute -z-10 rounded-md opacity-40 shadow-lg ${f.className}`}
+            className={`animate-float pointer-events-none absolute -z-10 h-auto rounded-md opacity-40 shadow-lg ${f.className}`}
             style={{ animationDelay: f.delay }}
           />
         ))}
@@ -112,6 +112,7 @@ export default async function HomePage() {
                 capital={c.capital}
                 area={c.area}
                 badges={c.badges}
+                priority={i < 3}
               />
             </Reveal>
           ))}
