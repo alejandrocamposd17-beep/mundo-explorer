@@ -7,7 +7,7 @@ const FEATURED = ["SLV", "MEX", "JPN", "ESP", "BRA", "CAN"];
 export default async function HomePage() {
   const countries = await getAllCountries();
   const featured = countries.filter((c) => FEATURED.includes(c.cca3));
-  const totalPopulation = countries.reduce((acc, c) => acc + c.population, 0);
+  const totalArea = countries.reduce((acc, c) => acc + c.area, 0);
   const regions = new Set(countries.map((c) => c.region)).size;
 
   return (
@@ -16,7 +16,7 @@ export default async function HomePage() {
         <p className="text-sm uppercase tracking-widest text-brand-100">Explora · Compara · Descubre</p>
         <h1 className="mt-3 text-4xl font-extrabold sm:text-5xl">El mundo en la palma de tu mano</h1>
         <p className="mx-auto mt-4 max-w-2xl text-brand-50/90">
-          Consulta datos de más de 240 países y territorios, revisa el clima actual de su capital y guarda tus
+          Consulta datos de más de 240 países y territorios, revisa su clima actual y guarda tus
           destinos favoritos.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -32,7 +32,7 @@ export default async function HomePage() {
       <section className="grid gap-4 sm:grid-cols-3">
         {[
           { label: "Países y territorios", value: numberFmt.format(countries.length) },
-          { label: "Población total", value: numberFmt.format(totalPopulation) },
+          { label: "Km² de superficie", value: numberFmt.format(Math.round(totalArea)) },
           { label: "Regiones", value: numberFmt.format(regions) },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
@@ -54,12 +54,11 @@ export default async function HomePage() {
             <CountryCard
               key={c.cca3}
               cca3={c.cca3}
-              name={c.name.common}
-              flag={c.flags.png}
-              flagAlt={c.flags.alt}
+              name={c.name}
+              flag={c.flagPng}
               region={c.region}
-              capital={c.capital?.[0]}
-              population={c.population}
+              capital={c.capital}
+              area={c.area}
             />
           ))}
         </div>

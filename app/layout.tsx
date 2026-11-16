@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar appName={APP_NAME} />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
         <footer className="border-t border-white/10 py-6 text-center text-sm text-slate-400">
-          © {new Date().getFullYear()} {APP_NAME} · Desarrollado por Alejandro Campos · Datos: REST Countries y Open-Meteo
+          © {new Date().getFullYear()} {APP_NAME} · Desarrollado por Alejandro Campos · Datos: mledoze/countries y Open-Meteo
         </footer>
       </body>
     </html>
