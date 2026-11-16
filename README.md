@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/alejandrocamposd17-beep/mundo-explorer/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandrocamposd17-beep/mundo-explorer/actions/workflows/ci.yml)
 
-Aplicación web construida con **Next.js 16 (App Router)**, **TypeScript** y **Tailwind CSS v4** para explorar los países del mundo, ver el **clima actual y el pronóstico de 7 días de su capital**, ubicarlos en un **mapa interactivo**, **compararlos** lado a lado y guardar favoritos. Desarrollada con la metodología **Vibe Coding** (IA como copiloto de desarrollo).
+Aplicación web **bilingüe (español/inglés)** construida con **Next.js 16 (App Router)**, **TypeScript** y **Tailwind CSS v4** para explorar los países del mundo: **clima, pronóstico, calidad del aire y alertas** de su capital, **hora local**, resumen de **Wikipedia**, **mapa interactivo**, **comparador** con distancia y diferencia horaria, **rankings**, **juegos** de banderas y capitales, y **favoritos sincronizados en la nube** con Supabase. Es **instalable (PWA)** y funciona sin conexión. Desarrollada con la metodología **Vibe Coding** (IA como copiloto de desarrollo).
 
 - **Demo en producción:** https://mundo-explorer.vercel.app
 - **Autor:** Alejandro Campos — Kodigo Academy (FSJ35)
@@ -36,22 +36,26 @@ Medido en producción con PageSpeed Insights (móvil y escritorio, 15 nov 2026),
 
 | Ruta | Tipo | Descripción |
 |------|------|-------------|
-| `/` | Server Component | Inicio con estadísticas globales y destinos destacados |
-| `/paises` | Server + Client | 250 países con búsqueda (*debounce*, sin tildes), filtro por región, orden por área y paginación |
-| `/paises/[code]` | Server + Client | Detalle en español, clima actual + pronóstico 7 días de la capital, mapa, fronteras y favoritos |
-| `/mapa` | Server + Client | Mapa mundial interactivo (Leaflet + OpenStreetMap) con todos los países |
-| `/comparar` | Server + Client | Compara dos países lado a lado (estado en la URL: `?a=slv&b=gtm`) |
-| `/favoritos` | Client Component | Favoritos en `localStorage`, sincronizados entre pestañas |
+| `/` | Server Component | Inicio con hero animado, estadísticas y destinos destacados |
+| `/paises` | Server + Client | 250 países con búsqueda, filtros por región, idioma, sin litoral y ONU, orden y paginación |
+| `/paises/[code]` | Server + Client | Detalle: datos, Wikipedia, hora local, clima + aire + alertas + pronóstico, mapa, compartir |
+| `/mapa` | Server + Client | Mapa mundial interactivo (Leaflet + OpenStreetMap, modo oscuro) |
+| `/comparar` | Server + Client | Dos países lado a lado con distancia entre capitales y diferencia horaria |
+| `/rankings` | Server Component | Más grandes, más pequeños, más fronteras y más idiomas |
+| `/juegos` | Server + Client | «Adivina la bandera» y «Quiz de capitales» con niveles, racha y récord |
+| `/favoritos` | Client Component | Favoritos en el navegador o sincronizados con tu cuenta |
+| `/cuenta` | Client Component | Inicio de sesión sin contraseña (enlace mágico) con Supabase Auth |
 | `/acerca` | Server Component | Información del proyecto y stack |
+| `/api/clima` | Route Handler | Clima actual, 7 días y calidad del aire (Open-Meteo), validado y cacheado |
+| `/api/paises` | Route Handler | Lista mínima de países para el buscador Ctrl+K |
 | `/aleatorio` | Route Handler | Redirige a un país al azar (botón «Sorpréndeme») |
-| `/api/clima` | Route Handler | Proxy validado hacia Open-Meteo (actual + 7 días), con caché de 10 min |
 
-Además: tipografía **Inter + Space Grotesk** (`next/font`), logo y favicon propios, hero animado, animaciones al hacer scroll y transiciones entre páginas (respetan «reducir movimiento»), brillo de fondo con los colores de cada bandera, **gráfica SVG del pronóstico**, insignias en las tarjetas (Sin litoral, ONU, Territorio…), prefijo telefónico, dominio y código ISO de cada país, **imágenes Open Graph** generadas por país, **modo claro/oscuro** (respeta la preferencia del sistema y se recuerda), datos traducidos al español (regiones, subregiones, idiomas y monedas) y diseño responsive con menú móvil.
+**Además:** idioma español/inglés (cookie + Server Components), buscador global **Ctrl+K**, modo claro/oscuro, tipografía Inter + Space Grotesk, animaciones que respetan «reducir movimiento», imágenes **Open Graph** por país, **PWA** con service worker y página sin conexión, y **Vercel Analytics**.
 
 **Requisitos cubiertos**
 
-- ✅ 7 páginas + 2 Route Handlers con App Router
-- ✅ APIs externas: dataset mledoze/countries y geocodificación de Open-Meteo (Server Components), clima de Open-Meteo (Route Handler `/api/clima`)
+- ✅ 11 páginas + 3 Route Handlers con App Router
+- ✅ APIs externas: mledoze/countries, Open-Meteo (clima, aire, geocodificación), Wikipedia y Supabase (serverless)
 - ✅ Server Components y Client Components combinados
 - ✅ Hooks `useState`, `useEffect`, `useMemo` y `useRef`
 - ✅ Diseño responsive (mobile-first)
@@ -61,18 +65,18 @@ Además: tipografía **Inter + Space Grotesk** (`next/font`), logo y favicon pro
 ## 🧱 Estructura
 
 ```
-app/
-├── api/clima/route.ts      # Route Handler (GET /api/clima?lat=&lon=)
-├── paises/                 # listado, [code] (detalle), loading y error
-├── mapa/  comparar/  favoritos/  acerca/
-├── layout.tsx · page.tsx · loading.tsx · error.tsx · not-found.tsx · globals.css
-components/                 # Navbar, ThemeToggle, CountryCard, CountryExplorer, CountryMap,
-                            # CompareSelector, WeatherWidget, FavoriteButton
+app/                        # rutas (App Router), API, manifest e imágenes Open Graph
+components/                 # Navbar, CommandPalette, QuizGame, WeatherWidget, CountryMap, ShareButton…
 lib/
-├── countries.ts · geocoding.ts   # servicios de servidor (server-only)
-├── normalize.ts · filter.ts · validation.ts · favorites.ts · weather.ts  # lógica pura y testeable
-tests/                      # pruebas unitarias con Vitest
-.github/workflows/ci.yml    # CI: lint, tipos, tests y build
+├── i18n/                   # diccionarios es/en, getLocale (servidor) y useI18n (cliente)
+├── countries.ts · geocoding.ts · wikipedia.ts   # servicios de servidor (server-only)
+├── normalize.ts · filter.ts · quiz.ts · geo.ts · weather.ts · validation.ts  # lógica pura y testeable
+├── supabase.ts · cloudFavorites.ts · favorites.ts                         # favoritos local + nube
+public/sw.js · public/offline.html                # PWA sin conexión
+supabase/schema.sql         # tabla de favoritos con RLS
+tests/                      # Vitest (unitarias)
+e2e/                        # Playwright (extremo a extremo, escritorio y móvil)
+.github/workflows/ci.yml    # CI: lint, tipos, tests, build y e2e
 ```
 
 ## 🚀 Instalación y uso local
@@ -94,11 +98,13 @@ npm run dev                  # http://localhost:3000
 | `npm run lint` | ESLint (config de Next.js + TypeScript) |
 | `npm run typecheck` | Verificación de tipos con `tsc` |
 | `npm test` | Pruebas unitarias con Vitest |
+| `npm run test:e2e` | Pruebas de extremo a extremo con Playwright (requiere `npm run build`) |
 
 ## ✅ Calidad
 
 - **Pruebas unitarias (Vitest):** validación de coordenadas, búsqueda/filtros/orden, normalización y traducción de datos, y saneamiento de favoritos.
-- **CI con GitHub Actions:** en cada push a `main` se ejecutan lint, chequeo de tipos, tests y build.
+- **Pruebas de extremo a extremo (Playwright):** 11 escenarios en escritorio y móvil (búsqueda, detalle, favoritos, comparador, idioma, juego, Ctrl+K, rankings, API y 404).
+- **CI con GitHub Actions:** en cada push a `main` se ejecutan lint, chequeo de tipos, tests unitarios, build y e2e.
 - **Despliegue continuo:** Vercel publica automáticamente cada commit en `main`.
 
 ## 🔐 Variables de entorno
@@ -109,12 +115,25 @@ npm run dev                  # http://localhost:3000
 | `COUNTRIES_API_URL` | Solo servidor | URL del dataset JSON de países (mledoze/countries) |
 | `WEATHER_API_URL` | Solo servidor | Endpoint de pronóstico de Open-Meteo |
 | `GEOCODING_API_URL` | Solo servidor | Endpoint de geocodificación de Open-Meteo |
+| `AIR_QUALITY_API_URL` | Solo servidor | Endpoint de calidad del aire de Open-Meteo |
+| `NEXT_PUBLIC_SITE_URL` | Cliente/Servidor | URL pública (Open Graph) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Cliente | URL del proyecto de Supabase (opcional) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Cliente | Clave pública de Supabase; la seguridad la da RLS (opcional) |
 
-Ninguna API requiere clave. `.env.local` está en `.gitignore` y nunca se sube al repositorio.
+Las APIs de datos no requieren clave. Supabase es opcional: sin sus variables, la app guarda los favoritos en el navegador. `.env.local` está en `.gitignore` y nunca se sube al repositorio.
+
+### Configurar Supabase (favoritos en la nube)
+
+1. Crea un proyecto en Supabase y ejecuta `supabase/schema.sql` en el SQL Editor.
+2. En *Authentication → URL Configuration* pon tu dominio como Site URL y agrega `https://tu-dominio/cuenta` a Redirect URLs.
+3. Agrega `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en `.env.local` y en Vercel.
 
 ## 🛡️ Seguridad
 
-- **Content-Security-Policy** que solo permite scripts propios, imágenes de `flagcdn.com` y `tile.openstreetmap.org`, conexiones al mismo origen y prohíbe `<object>`, `<iframe>` externos y cambios de `base-uri`.
+- **Content-Security-Policy** con lista blanca: imágenes de `flagcdn.com`, OpenStreetMap y `upload.wikimedia.org`; conexiones solo al mismo origen y a Supabase; sin `<object>`, `<iframe>` externos ni cambios de `base-uri`.
+- **Supabase con Row Level Security:** cada usuario solo puede leer y modificar sus propios favoritos; restricciones `CHECK` en la tabla y límite de 100 por usuario. Inicio de sesión sin contraseñas (enlace mágico).
+- Resúmenes de Wikipedia: solo se aceptan imágenes de `upload.wikimedia.org` y enlaces de `wikipedia.org`; zonas horarias IANA validadas antes de usarse.
+- El service worker no cachea `/cuenta` ni respuestas de otros orígenes (salvo banderas).
 - Cabeceras HTTP: `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, HSTS, `Permissions-Policy`; sin `X-Powered-By`.
 - Validación estricta de entradas: coordenadas en `/api/clima`, códigos de país (`^[A-Za-z]{3}$`) en rutas y en `/comparar`.
 - URLs externas construidas con `URL`/`searchParams` y `encodeURIComponent`, nunca concatenando entrada del usuario.
@@ -131,6 +150,8 @@ Desplegado en **Vercel** con integración continua desde la rama `main` de GitHu
 ## 📄 Créditos de datos
 
 - [mledoze/countries](https://github.com/mledoze/countries) — datos de países (fuente original de REST Countries)
-- [Open-Meteo](https://open-meteo.com) — clima, pronóstico y geocodificación
+- [Open-Meteo](https://open-meteo.com) — clima, pronóstico, calidad del aire y geocodificación
+- [Wikipedia](https://www.wikipedia.org) — resúmenes y fotos (CC BY-SA)
+- [Supabase](https://supabase.com) — autenticación y base de datos
 - [Flagpedia / flagcdn](https://flagcdn.com) — banderas
 - [OpenStreetMap](https://www.openstreetmap.org/copyright) + [Leaflet](https://leafletjs.com) — mapas

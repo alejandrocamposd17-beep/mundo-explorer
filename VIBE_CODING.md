@@ -94,6 +94,24 @@ Cada iteración corresponde a uno o más commits del historial.
 | 26 | Sorpréndeme | Route Handler `/aleatorio` (dinámico) que redirige a un país al azar. |
 | 27 | Mapa oscuro | Primero se usaron los mosaicos oscuros de CARTO, pero en producción mostraban «API KEY REQUIRED». Se volvió a OpenStreetMap y el modo oscuro se logra con un filtro CSS (`invert` + `hue-rotate`) que cambia con el tema. |
 
+### Cuarta ronda: 15 funciones nuevas
+
+> Prompt: "¿Qué más podríamos agregar?" → "Hazlas todas" (rankings, filtros, hora local, distancia, compartir, Ctrl+K, juegos, calidad del aire, Wikipedia, PWA, analítica, inglés, Playwright y Supabase).
+
+| # | Iteración | Qué se pidió / ajustó |
+|---|-----------|-----------------------|
+| 28 | Inglés | Diccionarios `es`/`en` tipados (el inglés debe cumplir el tipo del español, así TypeScript avisa si falta un texto). El idioma vive en una cookie que leen los Server Components; los Client Components lo reciben con un `I18nProvider`. Los datos de países también se traducen (`normalizeCountry(c, locale)`). |
+| 29 | Rankings y filtros | Ruta `/rankings`; filtros por idioma (código ISO 639-3, no por nombre traducido), sin litoral y ONU con pruebas unitarias. |
+| 30 | Hora y distancia | La geocodificación de Open-Meteo también devuelve la zona horaria: se usa para la hora local en vivo y la diferencia horaria; la distancia usa la fórmula de Haversine. |
+| 31 | Juegos | Lógica pura en `lib/quiz.ts` (4 opciones únicas, sin respuestas vacías) probada con un generador aleatorio determinista; la pregunta se crea en el cliente para evitar errores de hidratación. |
+| 32 | Clima | `/api/clima` consulta en paralelo la API de calidad del aire; las alertas se calculan con umbrales en una función pura. |
+| 33 | Wikipedia | API REST pública por idioma con validación del dominio de imágenes y enlaces. |
+| 34 | Ctrl+K y compartir | Paleta de búsqueda accesible (combobox con flechas) que carga `/api/paises` solo al abrirse; compartir con `navigator.share` y alternativas (copiar enlace, WhatsApp). |
+| 35 | PWA | `manifest.ts`, íconos generados desde el SVG del logo y un service worker escrito a mano (network-first para páginas, cache-first para assets y banderas, página offline). |
+| 36 | Supabase | Inicio de sesión por enlace mágico (sin contraseñas) y sincronización de favoritos: al iniciar sesión se unen la lista local y la remota; luego cada cambio se sube con *debounce*. La seguridad está en RLS, no en el cliente. La función es opcional: sin variables de entorno la app sigue funcionando. |
+| 37 | Playwright | 11 escenarios en escritorio y Pixel 7 que se ejecutan en CI contra el build de producción. |
+| 38 | Analytics | `@vercel/analytics` en el layout y activado en el plan gratuito. |
+
 ## 4. Decisiones técnicas
 
 - **Server Components para datos de países:** se obtienen y cachean en el servidor (ISR de 24 h), lo que mejora el SEO y reduce JavaScript en el cliente.
@@ -122,6 +140,9 @@ Cada iteración corresponde a uno o más commits del historial.
 11. **Resultado medido.** Lighthouse en producción: 100 rendimiento, 96 accesibilidad, 100 buenas prácticas y 100 SEO.
 
 12. **Servicios que cambian sus condiciones.** Los mosaicos de CARTO pasaron a requerir API key; probarlo en producción lo detectó enseguida y se resolvió con un filtro CSS sobre OpenStreetMap. Lo mismo pasó antes con REST Countries: conviene verificar cada servicio externo en producción.
+
+13. **Sin acceso directo de git.** El código se subió por la interfaz web de GitHub carpeta por carpeta; cada subida es un commit, por eso los primeros builds de una ronda pueden fallar hasta que llegan todos los archivos. El CI confirmó el estado final en verde.
+14. **Credenciales.** Las contraseñas y claves (base de datos de Supabase, clave pública en Vercel) las ingresó el autor directamente; el asistente solo configuró lo que no es secreto.
 
 ## 6. Aprendizajes
 
