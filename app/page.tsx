@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-14">
-      <section className="rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-indigo-700 px-6 py-14 text-center shadow-xl sm:px-12">
+      <section className="force-dark rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-indigo-700 px-6 py-14 text-center shadow-xl sm:px-12">
         <p className="text-sm uppercase tracking-widest text-brand-100">Explora · Compara · Descubre</p>
         <h1 className="mt-3 text-4xl font-extrabold sm:text-5xl">El mundo en la palma de tu mano</h1>
         <p className="mx-auto mt-4 max-w-2xl text-brand-50/90">

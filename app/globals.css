@@ -10,11 +10,58 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+:root {
+  --page-bg: #0b1220;
+  --page-fg: #e5edf7;
+  color-scheme: dark;
+}
+
+/*
+ * Modo claro: el diseño usa utilidades "white/xx" y la escala slate pensadas para fondo oscuro.
+ * En lugar de duplicar clases, se invierten esas variables de Tailwind v4 cuando el tema es claro.
+ */
+:root[data-theme="light"] {
+  --page-bg: #f4f7fb;
+  --page-fg: #0f172a;
+  color-scheme: light;
+  --color-white: #0f172a;
+  --color-slate-100: #1e293b;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #ffffff;
+}
+
+/* Secciones que siempre se muestran oscuras (hero, clima), sin importar el tema */
+.force-dark {
+  --color-white: #ffffff;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  color: #f1f5f9;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: #0b1220;
-  color: #e5edf7;
+  background: var(--page-bg);
+  color: var(--page-fg);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-bg {
+  background: color-mix(in srgb, var(--page-bg) 85%, transparent);
+}
+
+/* Leaflet hereda colores oscuros en los tooltips */
+.leaflet-tooltip {
+  color: #0f172a;
 }

@@ -22,7 +22,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         <button
           type="button"
           onClick={() => reset()}
-          className="rounded-xl bg-brand-600 px-4 py-2 font-semibold hover:bg-brand-500"
+          className="rounded-xl bg-brand-600 px-4 py-2 font-semibold text-[#fff] hover:bg-brand-500"
         >
           Intentar de nuevo
         </button>
