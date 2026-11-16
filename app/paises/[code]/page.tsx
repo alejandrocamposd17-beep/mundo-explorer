@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import FavoriteButton from "@/components/FavoriteButton";
+import CountryMap from "@/components/CountryMap";
 import WeatherWidget from "@/components/WeatherWidget";
+import { getCapitalCoords } from "@/lib/geocoding";
 import { getCountryByCode, getCountryNames, numberFmt } from "@/lib/countries";
 
 type Props = { params: Promise<{ code: string }> };
@@ -18,10 +20,15 @@ export default async function CountryDetailPage({ params }: Props) {
   const country = await getCountryByCode(code);
   if (!country) notFound();
 
-  const borders = await getCountryNames(country.borders);
-  const coords = country.latlng;
+  const [borders, capitalCoords] = await Promise.all([
+    getCountryNames(country.borders),
+    country.capital ? getCapitalCoords(country.capital, country.cca2) : Promise.resolve(null),
+  ]);
+  // Clima y mapa en la capital; si no se encuentra, en el centro geográfico del país
+  const coords = capitalCoords ?? country.latlng;
+  const place = capitalCoords && country.capital ? `${country.capital}, ${country.name}` : country.name;
   const mapsUrl = coords
-    ? `https://www.google.com/maps/@${encodeURIComponent(coords[0])},${encodeURIComponent(coords[1])},6z`
+    ? `https://www.google.com/maps/@${encodeURIComponent(coords[0])},${encodeURIComponent(coords[1])},${capitalCoords ? 11 : 6}z`
     : null;
 
   const facts = [
@@ -42,17 +49,25 @@ export default async function CountryDetailPage({ params }: Props) {
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-800">
+        <div className="self-start overflow-hidden rounded-2xl border border-white/10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={country.flagSvg} alt={`Bandera de ${country.name}`} className="w-full object-cover" />
+          <img src={country.flagSvg} alt={`Bandera de ${country.name}`} className="block h-auto w-full" />
         </div>
 
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-4xl font-extrabold">{country.name}</h1>
-            <FavoriteButton
-              country={{ cca3: country.cca3, name: country.name, flag: country.flagPng, region: country.region }}
-            />
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/comparar?a=${country.cca3.toLowerCase()}`}
+                className="rounded-xl border border-white/20 px-4 py-2 font-semibold hover:bg-white/10"
+              >
+                ⇄ Comparar
+              </Link>
+              <FavoriteButton
+                country={{ cca3: country.cca3, name: country.name, flag: country.flagPng, region: country.region }}
+              />
+            </div>
           </div>
 
           <dl className="grid gap-3 sm:grid-cols-2">
@@ -77,7 +92,18 @@ export default async function CountryDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {coords && <WeatherWidget lat={coords[0]} lon={coords[1]} place={country.name} />}
+      {coords && <WeatherWidget lat={coords[0]} lon={coords[1]} place={place} />}
+
+      {coords && (
+        <section>
+          <h2 className="mb-3 text-xl font-bold">Ubicación</h2>
+          <CountryMap
+            points={[{ lat: coords[0], lng: coords[1], label: place }]}
+            center={coords}
+            zoom={capitalCoords ? 6 : 4}
+          />
+        </section>
+      )}
 
       {borders.length > 0 && (
         <section>
