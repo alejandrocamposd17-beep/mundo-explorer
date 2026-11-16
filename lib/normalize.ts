@@ -1,3 +1,5 @@
+import type { Locale } from "./i18n/config";
+
 /** Forma cruda del dataset público mledoze/countries (fuente original de REST Countries). */
 export type RawCountry = {
   name: { common: string; official: string };
@@ -20,6 +22,8 @@ export type RawCountry = {
 };
 
 /** Modelo normalizado que usa la app. */
+export type BadgeKey = "landlocked" | "noLandBorders" | "un" | "territory";
+
 export type Country = {
   cca3: string;
   cca2: string;
@@ -30,6 +34,8 @@ export type Country = {
   capital?: string;
   area: number;
   languages: string[];
+  /** Códigos ISO 639-3 de los idiomas (para filtrar sin depender de la traducción). */
+  languageCodes: string[];
   currencies: string[];
   latlng?: [number, number];
   borders: string[];
@@ -38,7 +44,7 @@ export type Country = {
   independent: boolean;
   tld?: string;
   callingCode?: string;
-  badges: string[];
+  badges: BadgeKey[];
   flagPng: string;
   flagSvg: string;
 };
@@ -83,17 +89,25 @@ export const SUBREGION_ES: Record<string, string> = {
   "Western Europe": "Europa Occidental",
 };
 
-const languageNames = new Intl.DisplayNames(["es"], { type: "language" });
-const currencyNames = new Intl.DisplayNames(["es"], { type: "currency" });
+const displayNames = {
+  es: {
+    language: new Intl.DisplayNames(["es"], { type: "language" }),
+    currency: new Intl.DisplayNames(["es"], { type: "currency" }),
+  },
+  en: {
+    language: new Intl.DisplayNames(["en"], { type: "language" }),
+    currency: new Intl.DisplayNames(["en"], { type: "currency" }),
+  },
+};
 
 function capitalize(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /** Traduce un idioma (código ISO 639-3) al español; si no hay traducción usa el nombre original. */
-export function translateLanguage(code: string, fallback: string): string {
+export function translateLanguage(code: string, fallback: string, locale: Locale = "es"): string {
   try {
-    const name = languageNames.of(code);
+    const name = displayNames[locale].language.of(code);
     return name && name.toLowerCase() !== code.toLowerCase() ? capitalize(name) : fallback;
   } catch {
     return fallback;
@@ -101,10 +115,10 @@ export function translateLanguage(code: string, fallback: string): string {
 }
 
 /** Traduce una moneda (código ISO 4217) al español conservando el símbolo. */
-export function translateCurrency(code: string, fallback: string, symbol?: string): string {
+export function translateCurrency(code: string, fallback: string, symbol?: string, locale: Locale = "es"): string {
   let name = fallback;
   try {
-    const translated = currencyNames.of(code);
+    const translated = displayNames[locale].currency.of(code);
     if (translated && translated.toUpperCase() !== code.toUpperCase()) name = capitalize(translated);
   } catch {
     // código no reconocido: se usa el nombre original
@@ -121,16 +135,19 @@ export function formatCallingCode(idd?: RawCountry["idd"]): string | undefined {
 }
 
 /** Etiquetas descriptivas que se muestran en las tarjetas. */
-export function computeBadges(c: Pick<RawCountry, "landlocked" | "borders" | "unMember" | "independent">): string[] {
-  const badges: string[] = [];
-  if (c.landlocked) badges.push("Sin litoral");
-  else if ((c.borders ?? []).length === 0) badges.push("Sin fronteras terrestres");
-  if (c.unMember) badges.push("ONU");
-  if (c.independent === false) badges.push("Territorio");
+export function computeBadges(
+  c: Pick<RawCountry, "landlocked" | "borders" | "unMember" | "independent">,
+): BadgeKey[] {
+  const badges: BadgeKey[] = [];
+  if (c.landlocked) badges.push("landlocked");
+  else if ((c.borders ?? []).length === 0) badges.push("noLandBorders");
+  if (c.unMember) badges.push("un");
+  if (c.independent === false) badges.push("territory");
   return badges;
 }
 
-export function normalizeCountry(c: RawCountry): Country {
+export function normalizeCountry(c: RawCountry, locale: Locale = "es"): Country {
+  const es = locale === "es";
   const cca2 = CCA2_REGEX.test(c.cca2) ? c.cca2.toLowerCase() : "un";
   const latlng =
     Array.isArray(c.latlng) && c.latlng.length === 2 && c.latlng.every((n) => Number.isFinite(n))
@@ -139,14 +156,17 @@ export function normalizeCountry(c: RawCountry): Country {
   return {
     cca3: c.cca3,
     cca2,
-    name: c.translations?.spa?.common ?? c.name.common,
-    officialName: c.translations?.spa?.official ?? c.name.official,
-    region: REGION_ES[c.region] ?? c.region,
-    subregion: c.subregion ? (SUBREGION_ES[c.subregion] ?? c.subregion) : undefined,
+    name: es ? (c.translations?.spa?.common ?? c.name.common) : c.name.common,
+    officialName: es ? (c.translations?.spa?.official ?? c.name.official) : c.name.official,
+    region: es ? (REGION_ES[c.region] ?? c.region) : c.region,
+    subregion: c.subregion ? (es ? (SUBREGION_ES[c.subregion] ?? c.subregion) : c.subregion) : undefined,
     capital: c.capital?.[0],
     area: c.area,
-    languages: Object.entries(c.languages ?? {}).map(([code, name]) => translateLanguage(code, name)),
-    currencies: Object.entries(c.currencies ?? {}).map(([code, m]) => translateCurrency(code, m.name, m.symbol)),
+    languages: Object.entries(c.languages ?? {}).map(([code, name]) => translateLanguage(code, name, locale)),
+    languageCodes: Object.keys(c.languages ?? {}).filter((code) => /^[a-z]{3}$/.test(code)),
+    currencies: Object.entries(c.currencies ?? {}).map(([code, m]) =>
+      translateCurrency(code, m.name, m.symbol, locale),
+    ),
     latlng,
     borders: c.borders ?? [],
     landlocked: Boolean(c.landlocked),
