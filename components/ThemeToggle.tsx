@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 
 type Theme = "light" | "dark";
 const STORAGE_KEY = "mundo-explorer:tema";
 
 export default function ThemeToggle() {
+  const { t } = useI18n();
   const [theme, setTheme] = useState<Theme | null>(null);
 
   // El tema real ya lo aplicó el script inline del layout; aquí solo lo leemos para pintar el botón
@@ -24,14 +26,15 @@ export default function ThemeToggle() {
     setTheme(next);
   };
 
+  const label = theme === "light" ? t.nav.themeDark : t.nav.themeLight;
   return (
     <button
       type="button"
       onClick={toggle}
       disabled={theme === null}
       className="rounded-lg border border-white/15 px-2.5 py-1.5 text-sm hover:bg-white/10 disabled:opacity-0"
-      aria-label={theme === "light" ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
-      title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+      aria-label={label}
+      title={label}
     >
       {theme === "light" ? "🌙" : "☀️"}
     </button>

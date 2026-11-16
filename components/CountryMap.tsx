@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import "leaflet/dist/leaflet.css";
+import { useI18n } from "@/lib/i18n/client";
 
 export type MapPoint = {
   lat: number;
@@ -25,6 +26,7 @@ type Props = {
 export default function CountryMap({ points, center, zoom, height = "h-80" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { t } = useI18n();
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
   }, [points, center, zoom, router]);
 
   if (failed) {
-    return <p className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">No se pudo cargar el mapa.</p>;
+    return <p className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{t.map.error}</p>;
   }
 
   return (
@@ -88,7 +90,7 @@ export default function CountryMap({ points, center, zoom, height = "h-80" }: Pr
       ref={containerRef}
       className={`${height} z-0 w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl shadow-black/20`}
       role="region"
-      aria-label="Mapa interactivo"
+      aria-label={t.map.label}
     />
   );
 }

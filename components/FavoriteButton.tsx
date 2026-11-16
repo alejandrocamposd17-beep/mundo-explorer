@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { readFavorites, writeFavorites, type FavoriteCountry } from "@/lib/favorites";
+import { useI18n } from "@/lib/i18n/client";
+import { FAVORITES_EVENT, readFavorites, writeFavorites, type FavoriteCountry } from "@/lib/favorites";
 
 export default function FavoriteButton({ country }: { country: FavoriteCountry }) {
+  const { t } = useI18n();
   const [isFav, setIsFav] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setIsFav(readFavorites().some((f) => f.cca3 === country.cca3));
+    const sync = () => setIsFav(readFavorites().some((f) => f.cca3 === country.cca3));
+    sync();
     setReady(true);
+    window.addEventListener(FAVORITES_EVENT, sync);
+    return () => window.removeEventListener(FAVORITES_EVENT, sync);
   }, [country.cca3]);
 
   const toggle = () => {
@@ -29,7 +34,7 @@ export default function FavoriteButton({ country }: { country: FavoriteCountry }
         isFav ? "bg-amber-400 text-slate-900 hover:bg-amber-300" : "border border-white/20 hover:bg-white/10"
       }`}
     >
-      {isFav ? "★ En favoritos" : "☆ Agregar a favoritos"}
+      {isFav ? t.favorites.added : t.favorites.add}
     </button>
   );
 }

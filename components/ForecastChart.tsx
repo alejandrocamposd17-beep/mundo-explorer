@@ -1,10 +1,19 @@
 import type { DailyForecast } from "@/lib/weather";
 
-const dayFmt = new Intl.DateTimeFormat("es-SV", { weekday: "short", timeZone: "UTC" });
-
 /** Gráfica SVG de temperaturas máximas y mínimas (sin librerías). */
-export default function ForecastChart({ days }: { days: DailyForecast[] }) {
+type Labels = { max: string; min: string; title: string };
+
+export default function ForecastChart({
+  days,
+  labels,
+  locale = "es-SV",
+}: {
+  days: DailyForecast[];
+  labels: Labels;
+  locale?: string;
+}) {
   if (days.length < 2) return null;
+  const dayFmt = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" });
 
   const W = 700;
   const H = 220;
@@ -25,7 +34,7 @@ export default function ForecastChart({ days }: { days: DailyForecast[] }) {
     <figure className="mt-4">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-labelledby="forecast-title">
         <title id="forecast-title">
-          {`Temperaturas de los próximos ${days.length} días: ${days
+          {`${labels.title}: ${days
             .map((d) => `${dayFmt.format(new Date(`${d.date}T00:00:00Z`))} ${Math.round(d.max)}° / ${Math.round(d.min)}°`)
             .join(", ")}`}
         </title>
@@ -59,10 +68,10 @@ export default function ForecastChart({ days }: { days: DailyForecast[] }) {
       </svg>
       <figcaption className="mt-1 flex justify-center gap-4 text-xs text-slate-300">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-4 rounded bg-amber-400" aria-hidden /> Máxima
+          <span className="h-2 w-4 rounded bg-amber-400" aria-hidden /> {labels.max}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-4 rounded bg-brand-400" aria-hidden /> Mínima
+          <span className="h-2 w-4 rounded bg-brand-400" aria-hidden /> {labels.min}
         </span>
       </figcaption>
     </figure>

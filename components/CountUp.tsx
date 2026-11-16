@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const fmt = new Intl.NumberFormat("es-SV");
+import { intlLocale } from "@/lib/i18n/config";
+import { useI18n } from "@/lib/i18n/client";
 
 /** Número que cuenta desde 0 hasta `value` al aparecer en pantalla (respeta "reducir movimiento"). */
 export default function CountUp({ value, duration = 1200 }: { value: number; duration?: number }) {
+  const { locale } = useI18n();
+  const fmt = new Intl.NumberFormat(intlLocale(locale));
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState(value);
 

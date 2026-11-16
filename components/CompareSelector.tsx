@@ -2,11 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/client";
 
 type Option = { cca3: string; name: string };
 
 export default function CompareSelector({ options, a, b }: { options: Option[]; a?: string; b?: string }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [first, setFirst] = useState(a ?? "");
   const [second, setSecond] = useState(b ?? "");
 
@@ -26,7 +28,7 @@ export default function CompareSelector({ options, a, b }: { options: Option[]; 
         onChange={(e) => onChange(e.target.value)}
         className="rounded-lg border border-white/15 bg-slate-900 px-3 py-2 outline-none focus:border-brand-400"
       >
-        <option value="">Selecciona un país…</option>
+        <option value="">{t.compare.select}</option>
         {options.map((o) => (
           <option key={o.cca3} value={o.cca3}>
             {o.name}
@@ -38,7 +40,7 @@ export default function CompareSelector({ options, a, b }: { options: Option[]; 
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-end">
-      {select(first, (v) => { setFirst(v); update(v, second); }, "País A")}
+      {select(first, (v) => { setFirst(v); update(v, second); }, t.compare.a)}
       <button
         type="button"
         onClick={() => {
@@ -47,11 +49,11 @@ export default function CompareSelector({ options, a, b }: { options: Option[]; 
           update(second, first);
         }}
         className="rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/10"
-        aria-label="Intercambiar países"
+        aria-label={t.compare.swap}
       >
         ⇄
       </button>
-      {select(second, (v) => { setSecond(v); update(first, v); }, "País B")}
+      {select(second, (v) => { setSecond(v); update(first, v); }, t.compare.b)}
     </div>
   );
 }
