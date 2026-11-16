@@ -11,9 +11,11 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://flagcdn.com https://tile.openstreetmap.org",
+  "img-src 'self' data: blob: https://flagcdn.com https://tile.openstreetmap.org https://upload.wikimedia.org",
   "font-src 'self'",
-  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  `connect-src 'self' https://flagcdn.com https://*.supabase.co wss://*.supabase.co${isDev ? " ws:" : ""}`,
+  "worker-src 'self'",
+  "manifest-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -33,7 +35,11 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      // El service worker no debe quedarse en caché para que las actualizaciones lleguen enseguida
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] },
+    ];
   },
 };
 

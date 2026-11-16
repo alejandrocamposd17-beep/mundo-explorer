@@ -11,3 +11,5 @@ next-env.d.ts
 # variables de entorno locales (nunca subir claves)
 .env
 .env*.local
+/test-results/
+/playwright-report/
