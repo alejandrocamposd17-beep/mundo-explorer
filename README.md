@@ -13,10 +13,14 @@ Aplicación web construida con **Next.js 16 (App Router)**, **TypeScript** y **T
 | Inicio | Detalle de país |
 |---|---|
 | ![Inicio](docs/screenshots/inicio.jpg) | ![Detalle](docs/screenshots/detalle.jpg) |
-| **Clima, pronóstico y mapa** | **Mapa mundial** |
-| ![Clima y mapa](docs/screenshots/clima-y-mapa.jpg) | ![Mapa](docs/screenshots/mapa.jpg) |
+| **Pronóstico de 7 días** | **Mapa mundial (modo oscuro)** |
+| ![Pronóstico](docs/screenshots/clima-y-mapa.jpg) | ![Mapa](docs/screenshots/mapa.jpg) |
 | **Comparador** | **Modo claro** |
 | ![Comparar](docs/screenshots/comparar.jpg) | ![Modo claro](docs/screenshots/paises-modo-claro.jpg) |
+
+**Vista previa al compartir el enlace (Open Graph):**
+
+![Open Graph](docs/screenshots/open-graph.jpg)
 
 ## ⚡ Rendimiento (Lighthouse / PageSpeed Insights)
 
@@ -24,7 +28,7 @@ Aplicación web construida con **Next.js 16 (App Router)**, **TypeScript** y **T
 |:---:|:---:|:---:|:---:|
 | **100** | **96** | **100** | **100** |
 
-Medido en producción con PageSpeed Insights (móvil y escritorio, 15 nov 2026).
+Medido en producción con PageSpeed Insights (móvil y escritorio, 15 nov 2026), antes del rediseño visual.
 
 ![Lighthouse](docs/screenshots/lighthouse.jpg)
 
@@ -39,13 +43,14 @@ Medido en producción con PageSpeed Insights (móvil y escritorio, 15 nov 2026).
 | `/comparar` | Server + Client | Compara dos países lado a lado (estado en la URL: `?a=slv&b=gtm`) |
 | `/favoritos` | Client Component | Favoritos en `localStorage`, sincronizados entre pestañas |
 | `/acerca` | Server Component | Información del proyecto y stack |
+| `/aleatorio` | Route Handler | Redirige a un país al azar (botón «Sorpréndeme») |
 | `/api/clima` | Route Handler | Proxy validado hacia Open-Meteo (actual + 7 días), con caché de 10 min |
 
-Además: **modo claro/oscuro** (respeta la preferencia del sistema y se recuerda), datos traducidos al español (regiones, subregiones, idiomas y monedas) y diseño responsive con menú móvil.
+Además: tipografía **Inter + Space Grotesk** (`next/font`), logo y favicon propios, hero animado, animaciones al hacer scroll y transiciones entre páginas (respetan «reducir movimiento»), brillo de fondo con los colores de cada bandera, **gráfica SVG del pronóstico**, insignias en las tarjetas (Sin litoral, ONU, Territorio…), prefijo telefónico, dominio y código ISO de cada país, **imágenes Open Graph** generadas por país, **modo claro/oscuro** (respeta la preferencia del sistema y se recuerda), datos traducidos al español (regiones, subregiones, idiomas y monedas) y diseño responsive con menú móvil.
 
 **Requisitos cubiertos**
 
-- ✅ 7 páginas + 1 Route Handler con App Router
+- ✅ 7 páginas + 2 Route Handlers con App Router
 - ✅ APIs externas: dataset mledoze/countries y geocodificación de Open-Meteo (Server Components), clima de Open-Meteo (Route Handler `/api/clima`)
 - ✅ Server Components y Client Components combinados
 - ✅ Hooks `useState`, `useEffect`, `useMemo` y `useRef`

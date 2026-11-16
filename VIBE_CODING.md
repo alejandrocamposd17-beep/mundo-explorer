@@ -78,6 +78,22 @@ Cada iteración corresponde a uno o más commits del historial.
 | 17 | Calidad | ESLint (flat config de Next 16), `tsc --noEmit` y GitHub Actions (lint → tipos → tests → build). |
 | 18 | Seguridad | Content-Security-Policy, validación del `cca2` antes de armar la URL de la bandera y tooltips del mapa como texto plano. |
 
+### Tercera ronda: rediseño visual
+
+> Prompt: "¿Qué podemos mejorar para que se vea mejor?" → "Impleméntalas todas".
+
+| # | Iteración | Qué se pidió / ajustó |
+|---|-----------|-----------------------|
+| 19 | Tipografía | `next/font` con Inter (texto) y Space Grotesk (títulos), servidas desde el mismo dominio. |
+| 20 | Identidad | Logo SVG propio en la navbar y `app/icon.svg` como favicon. |
+| 21 | Hero | Patrón de puntos, globo SVG girando y banderas flotantes (decorativos, `aria-hidden`). |
+| 22 | Movimiento | `template.tsx` para transiciones entre páginas, `Reveal` (IntersectionObserver) y `CountUp` para las estadísticas; todo se desactiva con `prefers-reduced-motion`. |
+| 23 | Detalle | Brillo de fondo con la propia bandera desenfocada (sin calcular colores), insignias y nuevos datos (prefijo, dominio, ISO, estatus). |
+| 24 | Pronóstico | Gráfica SVG de máximas/mínimas sin librerías, con `<title>` accesible. |
+| 25 | Open Graph | `opengraph-image.tsx` para el sitio y para cada país con `next/og`. |
+| 26 | Sorpréndeme | Route Handler `/aleatorio` (dinámico) que redirige a un país al azar. |
+| 27 | Mapa oscuro | Primero se usaron los mosaicos oscuros de CARTO, pero en producción mostraban «API KEY REQUIRED». Se volvió a OpenStreetMap y el modo oscuro se logra con un filtro CSS (`invert` + `hue-rotate`) que cambia con el tema. |
+
 ## 4. Decisiones técnicas
 
 - **Server Components para datos de países:** se obtienen y cachean en el servidor (ISR de 24 h), lo que mejora el SEO y reduce JavaScript en el cliente.
@@ -104,6 +120,8 @@ Cada iteración corresponde a uno o más commits del historial.
 9. **Leaflet en Next.js.** Importarlo de forma normal rompe el prerenderizado porque accede a `window`. Se resolvió con `import("leaflet")` dentro de `useEffect` y un manejo de interoperabilidad ESM/CommonJS.
 10. **Modo claro sin reescribir todo.** El diseño se hizo pensando en fondo oscuro; en lugar de reescribir cada clase, se aprovechó que Tailwind v4 expone los colores como variables CSS.
 11. **Resultado medido.** Lighthouse en producción: 100 rendimiento, 96 accesibilidad, 100 buenas prácticas y 100 SEO.
+
+12. **Servicios que cambian sus condiciones.** Los mosaicos de CARTO pasaron a requerir API key; probarlo en producción lo detectó enseguida y se resolvió con un filtro CSS sobre OpenStreetMap. Lo mismo pasó antes con REST Countries: conviene verificar cada servicio externo en producción.
 
 ## 6. Aprendizajes
 
