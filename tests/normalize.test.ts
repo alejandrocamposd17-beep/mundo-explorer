@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { normalizeCountry, translateCurrency, translateLanguage, type RawCountry } from "../lib/normalize";
+import {
+  computeBadges,
+  formatCallingCode,
+  normalizeCountry,
+  translateCurrency,
+  translateLanguage,
+  type RawCountry,
+} from "../lib/normalize";
 
 const raw: RawCountry = {
   name: { common: "El Salvador", official: "Republic of El Salvador" },
@@ -56,5 +63,27 @@ describe("traducciones con respaldo", () => {
   it("usa el nombre original si el código no se reconoce", () => {
     expect(translateLanguage("zzz", "Lengua X")).toBe("Lengua X");
     expect(translateCurrency("ZZZ", "Moneda X")).toBe("Moneda X");
+  });
+});
+
+describe("datos adicionales", () => {
+  it("formatea el prefijo telefónico", () => {
+    expect(formatCallingCode({ root: "+5", suffixes: ["03"] })).toBe("+503");
+    expect(formatCallingCode({ root: "+1", suffixes: ["201", "202"] })).toBe("+1");
+    expect(formatCallingCode({ root: "javascript:" })).toBeUndefined();
+    expect(formatCallingCode(undefined)).toBeUndefined();
+  });
+
+  it("calcula las insignias del país", () => {
+    expect(computeBadges({ landlocked: true, borders: ["X"], unMember: true })).toEqual(["Sin litoral", "ONU"]);
+    expect(computeBadges({ landlocked: false, borders: [], unMember: false, independent: false })).toEqual([
+      "Sin fronteras terrestres",
+      "Territorio",
+    ]);
+  });
+
+  it("solo acepta dominios de internet con formato válido", () => {
+    expect(normalizeCountry({ ...raw, tld: [".sv"] }).tld).toBe(".sv");
+    expect(normalizeCountry({ ...raw, tld: ["<b>x</b>"] }).tld).toBeUndefined();
   });
 });
