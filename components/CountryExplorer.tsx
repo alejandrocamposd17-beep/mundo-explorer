@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import CountryCard from "./CountryCard";
+import { filterCountries, type SortKey } from "@/lib/filter";
 
 export type ExplorerCountry = {
   cca3: string;
@@ -13,16 +14,7 @@ export type ExplorerCountry = {
   area: number;
 };
 
-type SortKey = "name" | "area-desc" | "area-asc";
-
 const PAGE_SIZE = 24;
-
-function normalize(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
-}
 
 export default function CountryExplorer({ countries }: { countries: ExplorerCountry[] }) {
   const [query, setQuery] = useState("");
@@ -43,24 +35,14 @@ export default function CountryExplorer({ countries }: { countries: ExplorerCoun
   }, [debouncedQuery, region, sort]);
 
   const regions = useMemo(
-    () => ["Todas", ...Array.from(new Set(countries.map((c) => c.region))).sort()],
+    () => ["Todas", ...Array.from(new Set(countries.map((c) => c.region))).sort((a, b) => a.localeCompare(b, "es"))],
     [countries],
   );
 
-  const filtered = useMemo(() => {
-    const q = normalize(debouncedQuery.trim());
-    const list = countries.filter((c) => {
-      const matchesRegion = region === "Todas" || c.region === region;
-      const matchesQuery =
-        q === "" || normalize(c.name).includes(q) || normalize(c.capital ?? "").includes(q);
-      return matchesRegion && matchesQuery;
-    });
-    return [...list].sort((a, b) => {
-      if (sort === "area-desc") return b.area - a.area;
-      if (sort === "area-asc") return a.area - b.area;
-      return a.name.localeCompare(b.name, "es");
-    });
-  }, [countries, debouncedQuery, region, sort]);
+  const filtered = useMemo(
+    () => filterCountries(countries, { query: debouncedQuery, region, sort }),
+    [countries, debouncedQuery, region, sort],
+  );
 
   return (
     <div>
@@ -125,7 +107,7 @@ export default function CountryExplorer({ countries }: { countries: ExplorerCoun
           <button
             type="button"
             onClick={() => setVisible((v) => v + PAGE_SIZE)}
-            className="rounded-xl bg-brand-600 px-5 py-3 font-semibold hover:bg-brand-500"
+            className="rounded-xl bg-brand-600 px-5 py-3 font-semibold text-[#fff] hover:bg-brand-500"
           >
             Cargar más
           </button>
