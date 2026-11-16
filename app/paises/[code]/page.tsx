@@ -12,7 +12,13 @@ type Props = { params: Promise<{ code: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
   const country = await getCountryByCode(code);
-  return { title: country ? country.name : "País no encontrado" };
+  if (!country) return { title: "País no encontrado" };
+  const description = `${country.name}: capital ${country.capital ?? "—"}, ${country.region}, ${numberFmt.format(country.area)} km². Clima actual, pronóstico y mapa.`;
+  return {
+    title: country.name,
+    description,
+    openGraph: { title: `${country.name} · Mundo Explorer`, description },
+  };
 }
 
 export default async function CountryDetailPage({ params }: Props) {
@@ -40,23 +46,46 @@ export default async function CountryDetailPage({ params }: Props) {
     { label: "Monedas", value: country.currencies.join(", ") || "—" },
     { label: "Salida al mar", value: country.landlocked ? "No (sin litoral)" : "Sí" },
     { label: "Miembro de la ONU", value: country.unMember ? "Sí" : "No" },
+    { label: "Prefijo telefónico", value: country.callingCode ?? "—" },
+    { label: "Dominio de internet", value: country.tld ?? "—" },
+    { label: "Código ISO", value: `${country.cca2.toUpperCase()} · ${country.cca3}` },
+    { label: "Estatus", value: country.independent ? "País independiente" : "Territorio dependiente" },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="relative space-y-8">
+      {/* Brillo de fondo con los colores de la bandera: la misma imagen, muy desenfocada */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={country.flagPng}
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[420px] w-[120%] max-w-none -translate-x-1/2 scale-110 object-cover opacity-25 blur-3xl"
+      />
       <Link href="/paises" className="text-sm text-brand-400 hover:underline">
         ← Volver a países
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <div className="self-start overflow-hidden rounded-2xl border border-white/10">
+        <div className="self-start overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/30">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={country.flagSvg} alt={`Bandera de ${country.name}`} className="block h-auto w-full" />
         </div>
 
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-4xl font-extrabold">{country.name}</h1>
+            <div>
+              <h1 className="text-4xl font-bold sm:text-5xl">{country.name}</h1>
+              {country.badges.length > 0 && (
+                <ul className="mt-2 flex flex-wrap gap-1.5">
+                  {country.badges.map((b) => (
+                    <li key={b} className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300">
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/comparar?a=${country.cca3.toLowerCase()}`}
@@ -72,7 +101,7 @@ export default async function CountryDetailPage({ params }: Props) {
 
           <dl className="grid gap-3 sm:grid-cols-2">
             {facts.map((f) => (
-              <div key={f.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <div key={f.label} className="rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
                 <dt className="text-xs uppercase tracking-wide text-slate-400">{f.label}</dt>
                 <dd className="mt-1 font-medium">{f.value}</dd>
               </div>
