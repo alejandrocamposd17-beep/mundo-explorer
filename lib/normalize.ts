@@ -4,6 +4,9 @@ export type RawCountry = {
   cca2: string;
   cca3: string;
   unMember?: boolean;
+  independent?: boolean;
+  tld?: string[];
+  idd?: { root?: string; suffixes?: string[] };
   currencies?: Record<string, { name: string; symbol?: string }>;
   capital?: string[];
   region: string;
@@ -32,6 +35,10 @@ export type Country = {
   borders: string[];
   landlocked: boolean;
   unMember: boolean;
+  independent: boolean;
+  tld?: string;
+  callingCode?: string;
+  badges: string[];
   flagPng: string;
   flagSvg: string;
 };
@@ -105,6 +112,24 @@ export function translateCurrency(code: string, fallback: string, symbol?: strin
   return symbol ? `${name} (${symbol})` : name;
 }
 
+/** Prefijo telefónico: "+503". Si hay varios sufijos (ej. +1 en Norteamérica) se muestra solo la raíz. */
+export function formatCallingCode(idd?: RawCountry["idd"]): string | undefined {
+  const root = idd?.root;
+  if (!root || !/^\+\d{1,4}$/.test(root)) return undefined;
+  const suffixes = (idd?.suffixes ?? []).filter((s) => /^\d{1,4}$/.test(s));
+  return suffixes.length === 1 ? `${root}${suffixes[0]}` : root;
+}
+
+/** Etiquetas descriptivas que se muestran en las tarjetas. */
+export function computeBadges(c: Pick<RawCountry, "landlocked" | "borders" | "unMember" | "independent">): string[] {
+  const badges: string[] = [];
+  if (c.landlocked) badges.push("Sin litoral");
+  else if ((c.borders ?? []).length === 0) badges.push("Sin fronteras terrestres");
+  if (c.unMember) badges.push("ONU");
+  if (c.independent === false) badges.push("Territorio");
+  return badges;
+}
+
 export function normalizeCountry(c: RawCountry): Country {
   const cca2 = CCA2_REGEX.test(c.cca2) ? c.cca2.toLowerCase() : "un";
   const latlng =
@@ -126,6 +151,10 @@ export function normalizeCountry(c: RawCountry): Country {
     borders: c.borders ?? [],
     landlocked: Boolean(c.landlocked),
     unMember: Boolean(c.unMember),
+    independent: c.independent !== false,
+    tld: c.tld?.find((t) => /^\.[a-z0-9.-]{1,20}$/i.test(t)),
+    callingCode: formatCallingCode(c.idd),
+    badges: computeBadges(c),
     flagPng: `https://flagcdn.com/w320/${cca2}.png`,
     flagSvg: `https://flagcdn.com/${cca2}.svg`,
   };
