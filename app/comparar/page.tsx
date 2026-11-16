@@ -112,7 +112,7 @@ export default async function ComparePage({ searchParams }: Props) {
                     <th key={c.cca3} className="p-3">
                       <Link href={`/paises/${c.cca3.toLowerCase()}`} className="flex items-center gap-2 font-semibold hover:underline">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={c.flagPng} alt="" className="h-5 w-8 rounded-sm object-cover" />
+                        <img src={c.flagPng} alt="" width={32} height={20} className="h-5 w-8 rounded-sm object-cover" />
                         {c.name}
                       </Link>
                     </th>
