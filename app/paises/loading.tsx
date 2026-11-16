@@ -1,4 +1,7 @@
-export default function CountriesLoading() {
+import { getI18n } from "@/lib/i18n/server";
+
+export default async function CountriesLoading() {
+  const { t } = await getI18n();
   return (
     <div role="status" aria-live="polite">
       <div className="h-9 w-64 animate-pulse rounded bg-white/10" />
@@ -16,7 +19,7 @@ export default function CountriesLoading() {
           </div>
         ))}
       </div>
-      <span className="sr-only">Cargando países…</span>
+      <span className="sr-only">{t.countries.loadingList}</span>
     </div>
   );
 }
