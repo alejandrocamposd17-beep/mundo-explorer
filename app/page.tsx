@@ -41,16 +41,12 @@ export default async function HomePage() {
           </g>
         </svg>
         {HERO_FLAGS.map((f) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          // Decorativas: se usan como fondo CSS (no <img>) porque la animación las rota
+          <div
             key={f.code}
-            src={`https://flagcdn.com/w160/${f.code}.png`}
-            alt=""
             aria-hidden
-            width={160}
-            height={107}
-            className={`animate-float pointer-events-none absolute -z-10 h-auto rounded-md opacity-40 shadow-lg ${f.className}`}
-            style={{ animationDelay: f.delay }}
+            className={`animate-float pointer-events-none absolute -z-10 aspect-[3/2] rounded-md bg-cover bg-center opacity-40 shadow-lg ${f.className}`}
+            style={{ animationDelay: f.delay, backgroundImage: `url(https://flagcdn.com/w160/${f.code}.png)` }}
           />
         ))}
 
