@@ -1,80 +1,11 @@
 import "server-only";
+import { COUNTRY_CODE_REGEX, normalizeCountry, type Country, type RawCountry } from "./normalize";
 
-/** Forma cruda del dataset público mledoze/countries (fuente original de REST Countries). */
-type RawCountry = {
-  name: { common: string; official: string };
-  cca2: string;
-  cca3: string;
-  unMember?: boolean;
-  currencies?: Record<string, { name: string; symbol?: string }>;
-  capital?: string[];
-  region: string;
-  subregion?: string;
-  languages?: Record<string, string>;
-  translations?: Record<string, { official: string; common: string }>;
-  latlng?: [number, number];
-  landlocked?: boolean;
-  borders?: string[];
-  area: number;
-};
-
-/** Modelo normalizado que usa la app. */
-export type Country = {
-  cca3: string;
-  cca2: string;
-  name: string;
-  officialName: string;
-  region: string;
-  subregion?: string;
-  capital?: string;
-  area: number;
-  languages: string[];
-  currencies: string[];
-  latlng?: [number, number];
-  borders: string[];
-  landlocked: boolean;
-  unMember: boolean;
-  flagPng: string;
-  flagSvg: string;
-};
+export type { Country } from "./normalize";
+export { COUNTRY_CODE_REGEX } from "./normalize";
 
 const DATA_URL =
   process.env.COUNTRIES_API_URL ?? "https://raw.githubusercontent.com/mledoze/countries/master/dist/countries.json";
-
-/** Código ISO 3166-1 alpha-3: exactamente 3 letras. */
-export const COUNTRY_CODE_REGEX = /^[A-Za-z]{3}$/;
-const CCA2_REGEX = /^[A-Za-z]{2}$/;
-
-const REGION_ES: Record<string, string> = {
-  Africa: "África",
-  Americas: "América",
-  Antarctic: "Antártida",
-  Asia: "Asia",
-  Europe: "Europa",
-  Oceania: "Oceanía",
-};
-
-function normalizeCountry(c: RawCountry): Country {
-  const cca2 = CCA2_REGEX.test(c.cca2) ? c.cca2.toLowerCase() : "un";
-  return {
-    cca3: c.cca3,
-    cca2,
-    name: c.translations?.spa?.common ?? c.name.common,
-    officialName: c.translations?.spa?.official ?? c.name.official,
-    region: REGION_ES[c.region] ?? c.region,
-    subregion: c.subregion,
-    capital: c.capital?.[0],
-    area: c.area,
-    languages: Object.values(c.languages ?? {}),
-    currencies: Object.values(c.currencies ?? {}).map((m) => `${m.name}${m.symbol ? ` (${m.symbol})` : ""}`),
-    latlng: Array.isArray(c.latlng) && c.latlng.length === 2 ? c.latlng : undefined,
-    borders: c.borders ?? [],
-    landlocked: Boolean(c.landlocked),
-    unMember: Boolean(c.unMember),
-    flagPng: `https://flagcdn.com/w320/${cca2}.png`,
-    flagSvg: `https://flagcdn.com/${cca2}.svg`,
-  };
-}
 
 export async function getAllCountries(): Promise<Country[]> {
   const res = await fetch(DATA_URL, { next: { revalidate: 86400 } });

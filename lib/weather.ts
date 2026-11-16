@@ -7,6 +7,19 @@ export type CurrentWeather = {
   time: string;
 };
 
+export type DailyForecast = {
+  date: string;
+  weatherCode: number;
+  max: number;
+  min: number;
+  precipitationProbability: number | null;
+};
+
+export type WeatherResponse = {
+  current: CurrentWeather;
+  daily: DailyForecast[];
+};
+
 const CODES: Record<number, { label: string; icon: string }> = {
   0: { label: "Despejado", icon: "☀️" },
   1: { label: "Mayormente despejado", icon: "🌤️" },

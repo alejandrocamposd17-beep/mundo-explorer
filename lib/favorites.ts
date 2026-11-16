@@ -9,7 +9,7 @@ const KEY = "mundo-explorer:favoritos";
 const MAX_FAVORITES = 100;
 export const FAVORITES_EVENT = "favorites-changed";
 
-function isFavorite(value: unknown): value is FavoriteCountry {
+export function isFavorite(value: unknown): value is FavoriteCountry {
   if (typeof value !== "object" || value === null) return false;
   const v = value as Record<string, unknown>;
   return (
@@ -23,13 +23,17 @@ function isFavorite(value: unknown): value is FavoriteCountry {
   );
 }
 
+/** Filtra cualquier valor desconocido y deja solo favoritos válidos. */
+export function sanitizeFavorites(value: unknown): FavoriteCountry[] {
+  return Array.isArray(value) ? value.filter(isFavorite).slice(0, MAX_FAVORITES) : [];
+}
+
 /** Lee favoritos de localStorage validando su forma (los datos del navegador no son confiables). */
 export function readFavorites(): FavoriteCountry[] {
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isFavorite).slice(0, MAX_FAVORITES) : [];
+    return sanitizeFavorites(JSON.parse(raw));
   } catch {
     return [];
   }
